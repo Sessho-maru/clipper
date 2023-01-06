@@ -38,6 +38,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 exports.__esModule = true;
 var child_process_1 = require("child_process");
 var http_1 = require("http");
+var fs_1 = require("fs");
 var host = 'localhost';
 var port = 8080;
 var srcPath;
@@ -45,7 +46,7 @@ var srcName;
 function split(arg) {
     var range = arg.range, name = arg.name;
     return new Promise(function (resolve, reject) {
-        (0, child_process_1.exec)("ffmpeg -ss ".concat(range.from, " -to ").concat(range.to, " -i \"").concat(srcPath, "/").concat(srcName, "\" -c copy ").concat(srcPath, "/").concat(name, ".mp4"), function (err, stdout, stderr) {
+        (0, child_process_1.exec)("ffmpeg -ss ".concat(range.from, " -to ").concat(range.to, " -i \"").concat(srcPath, "\\").concat(srcName, "\" -c copy \"").concat(srcPath, "\\").concat(name, ".mp4\""), function (err, stdout, stderr) {
             if (err) {
                 console.log('child process ends with errors');
                 reject({ isSuccess: false, message: err.message });
@@ -63,6 +64,46 @@ function setSrc(path) {
     srcPath = slashSplited.join('\\');
     srcName = filename;
     return "".concat(srcPath, "\\").concat(srcName);
+}
+function parseInjection(arg, modeFlg) {
+    var matchBkName = arg.raw.match(/\*.+\*/g);
+    var matchBkMs = arg.raw.match(/[0-9]+=[0-9]+/g);
+    var isEven = (matchBkName.length % 2) === 0;
+    var loopSize = modeFlg === 'range'
+        ? isEven
+            ? matchBkName.length / 2
+            : Math.floor(matchBkName.length / 2)
+        : matchBkName.length;
+    var bkNameArr = [];
+    var bkMsArr = [];
+    if (modeFlg === 'range') {
+        for (var i = 0; i < loopSize; ++i) {
+            bkNameArr.push(matchBkName.slice(i * 2, (i * 2) + 2));
+        }
+        if (!isEven) {
+            bkNameArr.push([matchBkName[matchBkName.length - 1]]);
+        }
+        for (var i = 0; i < loopSize; ++i) {
+            bkMsArr.push(matchBkMs.slice(i * 2, (i * 2) + 2));
+        }
+        if (!isEven) {
+            bkMsArr.push([matchBkMs[matchBkMs.length - 1]]);
+        }
+    }
+    else {
+        for (var i = 0; i < loopSize; ++i) {
+            bkNameArr.push([matchBkName[i]]);
+            bkMsArr.push([matchBkMs[i]]);
+        }
+    }
+    var out = [];
+    for (var i = 0; i < loopSize; ++i) {
+        out.push({
+            nameArr: bkNameArr[i],
+            msArr: bkMsArr[i]
+        });
+    }
+    return out;
 }
 var server = (0, http_1.createServer)(function (request, response) {
     switch (request.url) {
@@ -112,6 +153,31 @@ var server = (0, http_1.createServer)(function (request, response) {
                 }));
                 response.end();
             });
+            break;
+        }
+        case '/api/parseInjection': {
+            request.on('data', function (chunk) {
+                response.setHeader('Access-Control-Allow-Origin', '*');
+                var path = chunk.toString();
+                (0, fs_1.readFile)(path, 'utf16le', function (err, raw) {
+                    if (err) {
+                        response.write(JSON.stringify({
+                            isSuccess: false,
+                            message: "Failed to open the given file ".concat(path.split('\\').pop())
+                        }));
+                    }
+                    else {
+                        var out = '';
+                        var parsed = parseInjection({ raw: raw, out: out }, 'range');
+                        response.write(JSON.stringify({
+                            isSuccess: true,
+                            message: JSON.stringify(parsed)
+                        }));
+                    }
+                    response.end();
+                });
+            });
+            break;
         }
     }
 });

@@ -1,15 +1,54 @@
 import axios, { AxiosRequestConfig, AxiosResponse } from "axios";
-import { IBookmark, IChildResponse } from "./types";
+import { IBookmark, IChildResponse } from "./define";
 
-async function trySetSrc(path: string): Promise<string> {
-  const fullPath = await runChildProcessSetSrc(path);
+// #region parsing injected text file to IBookmark[]
+
+async function tryParseTextInjection(path: string): Promise<IChildResponse> {
+  try {
+    const res = await runParseTextInjectionProcess(path);
+    res.message = res.message.replace(/\*/g, '');
+    res.message = res.message.replace(/[0-9]+=/g, '');
+    return res;
+  }
+  catch (err) {
+    return err as IChildResponse;
+  }
+}
+async function runParseTextInjectionProcess(path: string): Promise<IChildResponse> {
+  const axiosConfig: AxiosRequestConfig = {
+    method: 'POST',
+    url: 'http://localhost:8080/api/parseInjection',
+    headers: {
+      'Content-Type': 'text/plain'
+    },
+    data: path,
+  }
+
+  const res: AxiosResponse<IChildResponse> = await axios(axiosConfig);
+  const { isSuccess, message } = res.data;
+
+  return new Promise<IChildResponse>((resolve, reject) => {
+    if (isSuccess) {
+      resolve({ isSuccess: true, message: message });
+    }
+    else {
+      reject({ isSuccess: false, message: message });
+    }
+  })
+}
+
+// #endregion
+
+// #region set source video path
+
+async function trySetVideoSource(path: string): Promise<string> {
+  const fullPath = await runSetVideoSoruceProcess(path);
 
   return new Promise<string>((resolve) => {
     resolve(fullPath);
   })
 }
-
-async function runChildProcessSetSrc(path: string): Promise<string> {
+async function runSetVideoSoruceProcess(path: string): Promise<string> {
   const axiosConfig: AxiosRequestConfig = {
     method: 'POST',
     url: 'http://localhost:8080/api/setSrc',
@@ -26,12 +65,16 @@ async function runChildProcessSetSrc(path: string): Promise<string> {
   })
 }
 
-async function trySplit(arg: IBookmark[]): Promise<string[]> {
+// #endregion 
+
+// #region execute ffmpeg splitting
+
+async function trySplit(arg: IBookmark[]): Promise<IChildResponse[]> {
   const responses: IChildResponse[] = [];
 
   try {
     for (const each of arg) {
-      const res = await runChildProcessSplit(each);
+      const res = await runSplitProcess(each);
       res.message = 'fulfilled';
       responses.push(res);
     }
@@ -40,18 +83,17 @@ async function trySplit(arg: IBookmark[]): Promise<string[]> {
     responses.push(err as IChildResponse);
   }
 
-  return new Promise<string[]>((resolve, reject) => {
+  return new Promise<IChildResponse[]>((resolve, reject) => {
     const isRejected = responses.some(each => each.isSuccess === false);
     if (isRejected) {
-      reject(responses.map((each) => { return each.message }));
+      reject(responses);
     }
     else {
-      resolve(responses.map((each) => { return each.message }));
+      resolve(responses);
     }
   })
 }
-
-async function runChildProcessSplit(bookmark: IBookmark): Promise<IChildResponse> {
+async function runSplitProcess(bookmark: IBookmark): Promise<IChildResponse> {
   const axiosConfig: AxiosRequestConfig = {
     method: 'POST',
     url: 'http://localhost:8080/api/split',
@@ -74,4 +116,6 @@ async function runChildProcessSplit(bookmark: IBookmark): Promise<IChildResponse
   });
 }
 
-export default { trySetSrc, trySplit };
+// #endregion
+
+export default { trySetVideoSource, trySplit, tryParseTextInjection };

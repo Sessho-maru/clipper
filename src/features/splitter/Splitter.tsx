@@ -1,137 +1,163 @@
-import { Fragment, useState, useRef, useEffect } from 'react';
+import React, { Fragment, useState, useRef, useEffect } from 'react';
+import CSS from './styles';
 import BookmarkForm from './BookmarkForm';
-import { LABEL_MARKER_END, LABEL_MARKER_START, testBookmarks } from './types';
-import { defaultBookmark, IBookmark, Plasmid, SplitterStatus } from './types';
+import { 
+  IBookmark, Plasmid, SplitterStatus,
+  LABEL_MARKER_END, LABEL_MARKER_START, LN_HhMmSs, LN_HhMmSsMs, DEFAULT_BOOKMARK, IChildResponse, IParsedRaw, IErrObj,
+  MarkerTimeFns, BoomarkNameFns,
+} from './define';
 import API from './SplitterAPI';
 
 function makeRealCopy<T>(arg: T): T {
   return JSON.parse(JSON.stringify(arg)) as T;
 }
 
-function isNumeric(char: string) {
-  return char.charCodeAt(0) > 47 && char.charCodeAt(0) < 58;
-}
-export function unformat(arg: string) {
-  return arg.split('').filter(isNumeric).join('');
+function ignoreDragEventDefault(event: React.DragEvent): void {
+  event.preventDefault();
+  event.stopPropagation();
 }
 
-export function format(str: string): string {
-  if (str.length < 6) {
-      return str;
-  }
+function postProcess(each: IBookmark): IBookmark {
+  const { range, validation } = each;
 
-  const hh = str.slice(0, 2);
-  const mm = str.slice(2, 4);
-  const ss = str.slice(4, 6);
-  const ms = str.slice(6, str.length);
+  range.from = MarkerTimeFns.formatMarkerTime(range.from);
+  range.to = MarkerTimeFns.formatMarkerTime(range.to);
+  each.name = BoomarkNameFns.sanitizeBookmarkName(each.name);
 
-  if (str.length < 7) {
-    return `${hh}:${mm}:${ss}`;
-  }
-  else {
-    return `${hh}:${mm}:${ss}.${ms}`;
-  }
+  return { name: each.name, range, validation };
 }
 
 export default function Splitter(): JSX.Element {
   const [splitterStatus, setSplitterStatus] = useState<SplitterStatus>('idle');
-  const [splitterBookmarks, setSplitterBookmarks] = useState<IBookmark[]>([
-    {name: '덤벨위치는_팔꿈치보다_살짝_뒤에', range: {from: '00:03:19.634',to: '00:03:28.302'}, validation: { isValid: true, message: '', subject: null }},
-    {name: '내릴때는_덤벨안쪽이_어깨선_따라_내린다', range: {from: '00:03:28.738',to: '00:03:36.964'}, validation: { isValid: true, message: '', subject: null }},
-    {name: '어깨의_쪼개짐이_보이면_바로_다시_수축', range: {from: '00:03:38.257',to: '00:04:34.232'}, validation: { isValid: true, message: '', subject: null }},
-    {name: '레터럴레이즈', range: {from: '00:09:41.517',to: '00:10:42.787'}, validation: { isValid: true, message: '', subject: null }},
-    {name: '레터럴레이즈_그립', range: {from: '00:11:58.445',to: '00:12:07.677'}, validation: { isValid: true, message: '', subject: null }}
+  const [splitterBookmarks, setSplitterBookmarks] = useState<IBookmark[]>([ DEFAULT_BOOKMARK
+    // {name: '덤벨위치는_팔꿈치보다_살짝_뒤에', range: {from: '000319634',to: '000328302'}, validation: { isValid: true, message: '', subject: null }},
+    // {name: '내릴때는_덤벨안쪽이_어깨선_따라_내린다', range: {from: '000328738',to: '000336964'}, validation: { isValid: true, message: '', subject: null }},
+    // {name: '어깨의_쪼개짐이_보이면_바로_다시_수축', range: {from: '000338257',to: '000434232'}, validation: { isValid: true, message: '', subject: null }},
+    // {name: '레터럴레이즈', range: {from: '000941517',to: '001042787'}, validation: { isValid: true, message: '', subject: null }},
+    // {name: '레터럴레이즈_그립', range: {from: '001158445',to: '001207677'}, validation: { isValid: true, message: '', subject: null }}
   ]);
 
   const [srcPath, setSrcPath] = useState<string | null>(null);
-
-  const [plasmid, setPlasmid] = useState<Plasmid>({ key: 'name', value: '', index: -1, lastModifiedTimeStamp: 0 });
+  const [plasmid, setPlasmid] = useState<Plasmid>({ target: {key: 'name', value: '', index: -1}, lastModifiedTimeStamp: 0 });
+  const [errArr, setErrArr] = useState<IErrObj[]>([]);
 
   const refFileNode = useRef(null);
 
-  async function asyncSplit(): Promise<void> {
-    setSplitterStatus('loading');
-    const strArr: string[] = await API.trySplit(splitterBookmarks);
-  
-    if (strArr[strArr.length - 1] !== 'fulfilled') {
+  async function asyncSetVideoSource(path: string): Promise<void> {
+    const fullPath = await API.trySetVideoSource(path);
+    setSrcPath(fullPath);
+  }
+  async function asyncParseTextInjection(path: string): Promise<void> {
+    setSplitterStatus('parsing');
+    const resObj: IChildResponse = await API.tryParseTextInjection(path);
+
+    if (!resObj.isSuccess) {
       setSplitterStatus('failed');
+      const parsingFailed: IErrObj = { id: 'E002', level: 'critical', msg: resObj.message };
+      setErrArr([parsingFailed]);
+    }
+    else {
+      setSplitterStatus('idle');
+      const parsed: IParsedRaw[] = JSON.parse(resObj.message);
+      setSplitterBookmarks(parsed.map((each): IBookmark => {
+        const bk: IBookmark = {} as IBookmark;
+        bk.name = each.nameArr.join(' ~ ');
+        bk.range = {
+          from: MarkerTimeFns.cvrtMsToUnformattedMarkerTime(each.msArr[0]),
+          to: MarkerTimeFns.cvrtMsToUnformattedMarkerTime(each.msArr[1])
+        };
+        bk.validation = DEFAULT_BOOKMARK.validation;
+        return bk;
+      }));
+    }
+  }
+  async function asyncSplit(): Promise<void> {
+    setSplitterStatus('splitting');
+    const resArr: IChildResponse[] = await API.trySplit(splitterBookmarks.map(postProcess));
+  
+    if (resArr[resArr.length - 1].message !== 'fulfilled') {
+      setSplitterStatus('failed');
+      const ffCommandFailed: IErrObj = { id: 'E003', level: 'critical', msg: resArr[resArr.length - 1].message };
+      setErrArr([ffCommandFailed]);
     }
     else {
       setSplitterStatus('idle');
     }
   }
 
-  async function asyncSetSrc(path: string): Promise<void> {
-    const fullPath = await API.trySetSrc(path);
-    setSrcPath(fullPath);
-  }
-
   useEffect(() => {
-    if (plasmid.index < 0) {
+    if (plasmid.target.index < 0) {
       return;
     }
 
-    const { key, index, value } = plasmid;
-    let target: IBookmark;
+    const { key, index, value } = plasmid.target;
     let isValid = true;
-
+    const aimed: IBookmark = makeRealCopy<IBookmark>(splitterBookmarks[index]);
+    
     switch(key) {
       case 'name': {
-        target = makeRealCopy(splitterBookmarks[index]);
-        target['name'] = value;
+        aimed['name'] = value;
         break;
       }
       default: {
-        target = makeRealCopy(splitterBookmarks[index]);
-        if (value.length < 6) {
-          if (!target.validation.isValid) {
-            target.validation.message = '';
-            target.validation.subject = null;
-            break;
-          }
+        if ((value.length < LN_HhMmSs) && aimed.range[key] === '') {
           return;
         }
         
         if (key === 'from') {
-          isValid = (parseInt(value) < parseInt(unformat(target.range.to))) || target.range.to === '';
+          isValid = (parseInt(value.padEnd(LN_HhMmSsMs, '0')) < parseInt(aimed.range.to)) || aimed.range.to === '';
           if (!isValid) {
-            target.validation.message = `${LABEL_MARKER_START} must be placed before ${LABEL_MARKER_END}`;
-            target.validation.subject = 'from';
+            aimed.validation.subject = 'from';
+            aimed.validation.message = `Must be before than ${LABEL_MARKER_END}`;
           }
-          else {
-            target.validation.message = '';
-            target.validation.subject = null;
-          }
-          target.range[key] = format(value);
         }
         else {
-          isValid = (parseInt(value) > parseInt(unformat(target.range.from))) || target.range.from === '';
+          isValid = (parseInt(value.padEnd(LN_HhMmSsMs, '0')) > parseInt(aimed.range.from)) || aimed.range.from === '';
           if (!isValid) {
-            target.validation.message = `${LABEL_MARKER_END} must be placed after ${LABEL_MARKER_START}`;
-            target.validation.subject = 'to';
+            aimed.validation.subject = 'to';
+            aimed.validation.message = `Must be after than ${LABEL_MARKER_START}`;
           }
-          else {
-            target.validation.message = '';
-            target.validation.subject = null;
-          }
-          target.range[key] = format(value);
         }
+        aimed.range[key] = value.padEnd(LN_HhMmSsMs, '0');
       }
     }
 
-    target.validation.isValid = isValid;
-    setSplitterBookmarks([...splitterBookmarks.slice(0, index), target, ...splitterBookmarks.slice(index + 1, splitterBookmarks.length)]);
+    aimed.validation.isValid = isValid;
+    if (isValid && key !== 'name') {
+      aimed.validation.message = '';
+      aimed.validation.subject = null;
+    }
+    setSplitterBookmarks([...splitterBookmarks.slice(0, index), aimed, ...splitterBookmarks.slice(index + 1, splitterBookmarks.length)]);
   }, [plasmid.lastModifiedTimeStamp]);
 
   return (
     <Fragment>
       <label>{ splitterStatus }</label><br/>
       <label>{ srcPath }</label>
-      { splitterBookmarks.map((each, index): JSX.Element => { return <BookmarkForm key={`form_${index}`} index={index} bookmark={each} plasmid={plasmid} setPlasmid={setPlasmid}/> }) }
+      <label>{ errArr.map((each) => { return each.msg }) }</label>
+      { splitterBookmarks.map((each, index): JSX.Element => { return <BookmarkForm key={`form_${index}`} bkIdx={index} bkObj={each} plasmid={plasmid} setPlasmid={setPlasmid}/> }) }
       <button disabled={ splitterBookmarks.some(each => each.validation.isValid === false) || srcPath === null } onClick={ asyncSplit }>Execute Split</button>
-      <button disabled={ splitterBookmarks.some(each => each.validation.isValid === false) } onClick={ () => { setSplitterBookmarks([...splitterBookmarks, defaultBookmark]) } }>Append Bookmark</button>
+      <button disabled={ splitterBookmarks.some(each => each.validation.isValid === false) } onClick={ () => { setSplitterBookmarks([...splitterBookmarks, DEFAULT_BOOKMARK]) } }>Append Bookmark</button>
       <button onClick={ () => { refFileNode.current.click(); } }>Choose Video</button>
-      <input type={'file'} ref={refFileNode} accept={'video/*'} onChange={ (event: React.ChangeEvent<{ files: FileList }>) => { asyncSetSrc(event.currentTarget.files[0].path) } } hidden/>
+      <div
+        style={CSS.dropPad}
+        onDragEnter={ (event: React.DragEvent) => { ignoreDragEventDefault(event) } }
+        onDragLeave={ (event: React.DragEvent) => { ignoreDragEventDefault(event) } }
+        onDragOver={ (event: React.DragEvent) => { ignoreDragEventDefault(event) } }
+        onDrop={ (event: React.DragEvent) => {
+          ignoreDragEventDefault(event);
+          const ext = event.dataTransfer.files[0].path.split('.').pop();
+          if (ext !== 'json' && ext !== 'pbf') {
+            const unexpectedFile: IErrObj = { id: 'E001', level: 'critical', msg: `Unexpected file (.${ext}) provided.` };
+            setErrArr([unexpectedFile]);
+            return;
+          }
+          asyncParseTextInjection(event.dataTransfer.files[0].path); }
+        }
+      >
+      </div>
+
+      <input type={'file'} ref={refFileNode} accept={'video/*'} onChange={ (event: React.ChangeEvent<{ files: FileList }>) => { asyncSetVideoSource(event.currentTarget.files[0].path) } } hidden/>
     </Fragment>
   );
 }
