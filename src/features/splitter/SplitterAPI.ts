@@ -41,17 +41,17 @@ async function runParseTextInjectionProcess(path: string): Promise<IChildRespons
 
 // #region set source video path
 
-async function trySetVideoSource(path: string): Promise<string> {
-  const fullPath = await runSetVideoSoruceProcess(path);
+async function trySetPathOf(kind: 'src' | 'output', path: string): Promise<string> {
+  const fullPath = await runSetPathOf(kind, path);
 
   return new Promise<string>((resolve) => {
     resolve(fullPath);
   })
 }
-async function runSetVideoSoruceProcess(path: string): Promise<string> {
+async function runSetPathOf(kind: 'src' | 'output', path: string): Promise<string> {
   const axiosConfig: AxiosRequestConfig = {
     method: 'POST',
-    url: 'http://localhost:8080/api/setSrc',
+    url: `http://localhost:8080/api/${(kind === 'src') ? 'setSrc' : 'setOuputPath'}`,
     headers: {
       'Content-Type': 'text/plain'
     },
@@ -66,6 +66,12 @@ async function runSetVideoSoruceProcess(path: string): Promise<string> {
 }
 
 // #endregion 
+
+// #region set output path
+
+
+
+// #endretion
 
 // #region execute ffmpeg splitting
 
@@ -118,4 +124,4 @@ async function runSplitProcess(bookmark: IBookmark): Promise<IChildResponse> {
 
 // #endregion
 
-export default { trySetVideoSource, trySplit, tryParseTextInjection };
+export default { trySetPathOf, trySplit, tryParseTextInjection };

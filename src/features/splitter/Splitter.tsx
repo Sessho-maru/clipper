@@ -38,14 +38,20 @@ export default function Splitter(): JSX.Element {
   ]);
 
   const [srcPath, setSrcPath] = useState<string | null>(null);
+  const [outputPath, setOutputPath] = useState<string | null>(null);
   const [plasmid, setPlasmid] = useState<Plasmid>({ target: {key: 'name', value: '', index: -1}, lastModifiedTimeStamp: 0 });
   const [errArr, setErrArr] = useState<IErrObj[]>([]);
 
-  const refFileNode = useRef(null);
+  const refNodeSetSrc = useRef<HTMLInputElement>(null);
+  const refNodeSetOutputDir = useRef<HTMLInputElement>(null);
 
   async function asyncSetVideoSource(path: string): Promise<void> {
-    const fullPath = await API.trySetVideoSource(path);
+    const fullPath = await API.trySetPathOf('src', path);
     setSrcPath(fullPath);
+  }
+  async function asyncSetOutputPath(path: string): Promise<void> {
+    const fullPath = await API.trySetPathOf('output', path);
+    setOutputPath(fullPath);
   }
   async function asyncParseTextInjection(path: string): Promise<void> {
     setSplitterStatus('parsing');
@@ -84,6 +90,10 @@ export default function Splitter(): JSX.Element {
       setSplitterStatus('idle');
     }
   }
+
+  useEffect(() => {
+    refNodeSetOutputDir.current.setAttribute('webkitdirectory', '');
+  }, [])
 
   useEffect(() => {
     if (plasmid.target.index < 0) {
@@ -134,11 +144,13 @@ export default function Splitter(): JSX.Element {
     <Fragment>
       <label>{ splitterStatus }</label><br/>
       <label>{ srcPath }</label>
+      <label>{ outputPath }</label>
       <label>{ errArr.map((each) => { return each.msg }) }</label>
       { splitterBookmarks.map((each, index): JSX.Element => { return <BookmarkForm key={`form_${index}`} bkIdx={index} bkObj={each} plasmid={plasmid} setPlasmid={setPlasmid}/> }) }
       <button disabled={ splitterBookmarks.some(each => each.validation.isValid === false) || srcPath === null } onClick={ asyncSplit }>Execute Split</button>
       <button disabled={ splitterBookmarks.some(each => each.validation.isValid === false) } onClick={ () => { setSplitterBookmarks([...splitterBookmarks, DEFAULT_BOOKMARK]) } }>Append Bookmark</button>
-      <button onClick={ () => { refFileNode.current.click(); } }>Choose Video</button>
+      <button onClick={ () => { refNodeSetSrc.current.click(); } }>Choose Video</button>
+      <button onClick={ () => { refNodeSetOutputDir.current.click(); }}>Output Directory</button>
       <div
         style={CSS.dropPad}
         onDragEnter={ (event: React.DragEvent) => { ignoreDragEventDefault(event) } }
@@ -157,7 +169,15 @@ export default function Splitter(): JSX.Element {
       >
       </div>
 
-      <input type={'file'} ref={refFileNode} accept={'video/*'} onChange={ (event: React.ChangeEvent<{ files: FileList }>) => { asyncSetVideoSource(event.currentTarget.files[0].path) } } hidden/>
+      <input type={'file'} ref={refNodeSetSrc} accept={'video/*'} onChange={ (event: React.ChangeEvent<HTMLInputElement>) => { asyncSetVideoSource(event.currentTarget.files[0].path) } } hidden/>
+      <input type={'file'} ref={refNodeSetOutputDir} onChange={ (event: React.ChangeEvent<HTMLInputElement>) => {
+          const fullpath = event.currentTarget.files[0].path;
+          const splitted = fullpath.split('\\');
+          splitted.pop();
+          const dir: string = splitted.join('\\');
+          asyncSetOutputPath(dir);
+        } 
+      } hidden/>
     </Fragment>
   );
 }

@@ -29,11 +29,12 @@ const host = 'localhost'
 const port = 8080;
 let srcPath: string;
 let srcName: string;
+let outputPath: string;
 
 function split(arg: IBookmark): Promise<IChildResponse> {
   const { range, name } = arg;
   return new Promise<IChildResponse>((resolve, reject) => {
-    exec(`ffmpeg -ss ${range.from} -to ${range.to} -i "${srcPath}\\${srcName}" -c copy "${srcPath}\\${name}.mp4"`, (err, stdout, stderr) => {
+    exec(`ffmpeg -ss ${range.from} -to ${range.to} -i "${srcPath}\\${srcName}" -c copy "${outputPath ?? srcPath}\\${name}.mp4"`, (err, stdout, stderr) => {
       if (err) {
         console.log('child process ends with errors');
         reject({ isSuccess: false, message: err.message });
@@ -133,11 +134,13 @@ const server = createServer((request, response) => {
       });
       break;
     }
-    case '/api/setSrc': {
+    case '/api/setSrc':
+    case '/api/setOuputPath': {
       request.on('data', (chunk: Uint8Array) => {
         const path = chunk.toString();
-
-        const fullPath = setSrc(path);
+        const fullPath = request.url === '/api/setSrc'
+                        ? setSrc(path)
+                        : outputPath = path;
 
         response.setHeader('Access-Control-Allow-Origin', '*');
         response.write(
