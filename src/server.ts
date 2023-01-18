@@ -1,29 +1,10 @@
 import { exec } from 'child_process';
 import { createServer } from 'http'
 import { readFile } from 'fs';
-
-export interface IChildResponse {
-  isSuccess: boolean,
-  message: string,
-}
-export interface IParsedRaw {
-  nameArr: string[],
-  msArr: string[],
-}
-
-export interface IMarker {
-  from: string,
-  to: string,
-}
-export interface IBookmark {
-  name: string,
-  range: IMarker,
-  validation: {
-    isValid: boolean,
-    message: string,
-    subject: 'from' | 'to' | null,
-  }
-}
+import { 
+  IBookmark, IChildResponse, IParsedRaw,
+  PathUtil
+} from './features/splitter/define';
 
 const host = 'localhost'
 const port = 8080;
@@ -48,10 +29,10 @@ function split(arg: IBookmark): Promise<IChildResponse> {
 }
 
 function setSrc(path: string): string {
-  const slashSplited = path.split('\\');
-  const filename = slashSplited.pop();
+  const splitted = PathUtil.splitIntoDirectories(path);
+  const filename = splitted.pop();
 
-  srcPath = slashSplited.join('\\');
+  srcPath = PathUtil.combineAsPath(splitted);
   srcName = filename;
 
   return `${srcPath}\\${srcName}`;
@@ -163,7 +144,7 @@ const server = createServer((request, response) => {
             response.write(
               JSON.stringify({
                 isSuccess: false,
-                message: `Failed to open the given file ${path.split('\\').pop()}`,
+                message: `Failed to open the given file ${PathUtil.getFilename(path)}`,
               })
             );
           }

@@ -4,7 +4,7 @@ import { MarkerTimeInput } from "./MarkerTimeInput";
 import { 
   IBookmark, Plasmid,
   LABEL_BOOKMARK_NAME, LABEL_MARKER_END, LABEL_MARKER_START,
-  MarkerTimeFns
+  MarkerTimeUtil
 } from "./define";
 
 interface IFormProps {
@@ -20,15 +20,15 @@ function BookmarkForm(props: IFormProps): JSX.Element {
   function onBookmarkModified(key: 'name' | 'from' | 'to', value: string): void {
     props.setPlasmid(
       { 
-        target: { key, value: key === 'name' ? value : MarkerTimeFns.unMask(value), index: bkIdx },
+        target: { key, value: key === 'name' ? value : MarkerTimeUtil.unMask(value), index: bkIdx },
         lastModifiedTimeStamp: Date.now() 
       }
     );
   }
 
   return (
-    <Fragment>
-      <Box width={1} mt={6.3}>
+    <Box mr={2} ml={1} mt={bkIdx === 0 ? 1 : 5} mb={2}>
+      <Box width={1}>
         <TextField
           id={`bk${bkIdx}.name`}
           label={ bkIdx === 0 ? LABEL_BOOKMARK_NAME : undefined }
@@ -40,7 +40,7 @@ function BookmarkForm(props: IFormProps): JSX.Element {
           fullWidth
         />
       </Box>
-      <Box display={'flex'} mt={1}>
+      <Box display={'flex'} mt={3}>
         <Box width={1} mr={1}>
           <MarkerTimeInput
             id={`bk${bkIdx}.from`}
@@ -70,8 +70,8 @@ function BookmarkForm(props: IFormProps): JSX.Element {
           />
         </Box>
       </Box>
-    </Fragment>
-  )
+    </Box>
+  );
 }
 
 export default BookmarkForm;

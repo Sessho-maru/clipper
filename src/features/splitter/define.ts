@@ -62,18 +62,18 @@ function cvrtMsToUnformattedMarkerTime(str: string): string {
 
 	return `${hour}`.padStart(2, '0') + `${min}`.padStart(2, '0') + `${sec}`.padStart(2, '0') + `${intMs % 1000}`.padStart(3, '0');
 }
-function formatMarkerTime(str: string): string {
-  const hh = str.slice(0, 2);
-  const mm = str.slice(2, 4);
-  const ss = str.slice(4, 6);
-  const ms = str.slice(6, LN_HhMmSsMs);
+function formatMarkerTime(timecode: string): string {
+  const hh = timecode.slice(0, 2);
+  const mm = timecode.slice(2, 4);
+  const ss = timecode.slice(4, 6);
+  const ms = timecode.slice(6, LN_HhMmSsMs);
 
   return `${hh}:${mm}:${ss}.${ms}`;
 }
 
-function sanitizeBookmarkName(str: string): string {
+function sanitizeToBookmarkName(markerName: string): string {
   let out = '';
-  for (const char of str) {
+  for (const char of markerName) {
     out += (PUNCS_FORBIDDEN.includes(char))
             ? '_'
             : char;
@@ -82,5 +82,16 @@ function sanitizeBookmarkName(str: string): string {
   return out;
 }
 
-export const MarkerTimeFns = { unMask, cvrtMsToUnformattedMarkerTime, formatMarkerTime };
-export const BoomarkNameFns = { sanitizeBookmarkName };
+function splitIntoDirectories(pathLike: string): string[] {
+  return pathLike.split('\\');
+}
+function combineAsPath(directories: string[]): string {
+  return directories.join('\\');
+}
+function getFilename(pathLike: string): string {
+  return pathLike.split('\\').pop();
+}
+
+export const MarkerTimeUtil = { unMask, cvrtMsToUnformattedMarkerTime, formatMarkerTime };
+export const MarkerNameUtil = { sanitizeToBookmarkName };
+export const PathUtil = { splitIntoDirectories, combineAsPath, getFilename }

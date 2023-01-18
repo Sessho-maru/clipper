@@ -1,5 +1,8 @@
 import axios, { AxiosRequestConfig, AxiosResponse } from "axios";
-import { IBookmark, IChildResponse } from "./define";
+import {
+  IBookmark, IChildResponse, 
+  PathUtil 
+} from "./define";
 
 // #region parsing injected text file to IBookmark[]
 
@@ -43,9 +46,11 @@ async function runParseTextInjectionProcess(path: string): Promise<IChildRespons
 
 async function trySetPathOf(kind: 'src' | 'output', path: string): Promise<string> {
   const fullPath = await runSetPathOf(kind, path);
+  const splitted = PathUtil.splitIntoDirectories(fullPath);
+  const threeRearDirs = splitted.slice(splitted.length - 3, splitted.length);
 
   return new Promise<string>((resolve) => {
-    resolve(fullPath);
+    resolve(`...\\${PathUtil.combineAsPath(threeRearDirs)}`);
   })
 }
 async function runSetPathOf(kind: 'src' | 'output', path: string): Promise<string> {

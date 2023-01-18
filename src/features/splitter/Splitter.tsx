@@ -1,12 +1,12 @@
-import React, { Fragment, useState, useRef, useEffect } from 'react';
-import CSS from './styles';
+import React, { useState, useRef, useEffect } from 'react';
 import BookmarkForm from './BookmarkForm';
 import { 
   IBookmark, Plasmid, SplitterStatus,
   LABEL_MARKER_END, LABEL_MARKER_START, LN_HhMmSs, LN_HhMmSsMs, DEFAULT_BOOKMARK, IChildResponse, IParsedRaw, IErrObj,
-  MarkerTimeFns, BoomarkNameFns,
+  MarkerTimeUtil, MarkerNameUtil, PathUtil,
 } from './define';
 import API from './SplitterAPI';
+import { Box, Button, Grid, Paper, Stack, Tooltip, Typography } from '@mui/material';
 
 function makeRealCopy<T>(arg: T): T {
   return JSON.parse(JSON.stringify(arg)) as T;
@@ -20,9 +20,9 @@ function ignoreDragEventDefault(event: React.DragEvent): void {
 function postProcess(each: IBookmark): IBookmark {
   const { range, validation } = each;
 
-  range.from = MarkerTimeFns.formatMarkerTime(range.from);
-  range.to = MarkerTimeFns.formatMarkerTime(range.to);
-  each.name = BoomarkNameFns.sanitizeBookmarkName(each.name);
+  range.from = MarkerTimeUtil.formatMarkerTime(range.from);
+  range.to = MarkerTimeUtil.formatMarkerTime(range.to);
+  each.name = MarkerNameUtil.sanitizeToBookmarkName(each.name);
 
   return { name: each.name, range, validation };
 }
@@ -69,8 +69,8 @@ export default function Splitter(): JSX.Element {
         const bk: IBookmark = {} as IBookmark;
         bk.name = each.nameArr.join(' ~ ');
         bk.range = {
-          from: MarkerTimeFns.cvrtMsToUnformattedMarkerTime(each.msArr[0]),
-          to: MarkerTimeFns.cvrtMsToUnformattedMarkerTime(each.msArr[1])
+          from: MarkerTimeUtil.cvrtMsToUnformattedMarkerTime(each.msArr[0]),
+          to: MarkerTimeUtil.cvrtMsToUnformattedMarkerTime(each.msArr[1])
         };
         bk.validation = DEFAULT_BOOKMARK.validation;
         return bk;
@@ -93,7 +93,7 @@ export default function Splitter(): JSX.Element {
 
   useEffect(() => {
     refNodeSetOutputDir.current.setAttribute('webkitdirectory', '');
-  }, [])
+  }, []);
 
   useEffect(() => {
     if (plasmid.target.index < 0) {
@@ -141,43 +141,76 @@ export default function Splitter(): JSX.Element {
   }, [plasmid.lastModifiedTimeStamp]);
 
   return (
-    <Fragment>
-      <label>{ splitterStatus }</label><br/>
-      <label>{ srcPath }</label>
-      <label>{ outputPath }</label>
-      <label>{ errArr.map((each) => { return each.msg }) }</label>
-      { splitterBookmarks.map((each, index): JSX.Element => { return <BookmarkForm key={`form_${index}`} bkIdx={index} bkObj={each} plasmid={plasmid} setPlasmid={setPlasmid}/> }) }
-      <button disabled={ splitterBookmarks.some(each => each.validation.isValid === false) || srcPath === null } onClick={ asyncSplit }>Execute Split</button>
-      <button disabled={ splitterBookmarks.some(each => each.validation.isValid === false) } onClick={ () => { setSplitterBookmarks([...splitterBookmarks, DEFAULT_BOOKMARK]) } }>Append Bookmark</button>
-      <button onClick={ () => { refNodeSetSrc.current.click(); } }>Choose Video</button>
-      <button onClick={ () => { refNodeSetOutputDir.current.click(); }}>Output Directory</button>
-      <div
-        style={CSS.dropPad}
-        onDragEnter={ (event: React.DragEvent) => { ignoreDragEventDefault(event) } }
-        onDragLeave={ (event: React.DragEvent) => { ignoreDragEventDefault(event) } }
-        onDragOver={ (event: React.DragEvent) => { ignoreDragEventDefault(event) } }
-        onDrop={ (event: React.DragEvent) => {
-          ignoreDragEventDefault(event);
-          const ext = event.dataTransfer.files[0].path.split('.').pop();
-          if (ext !== 'json' && ext !== 'pbf') {
-            const unexpectedFile: IErrObj = { id: 'E001', level: 'critical', msg: `Unexpected file (.${ext}) provided.` };
-            setErrArr([unexpectedFile]);
-            return;
+    <Grid 
+      container
+      spacing={0}
+      direction={'row'}
+      alignItems={'start'}
+    >
+      <Grid item sm={3} sx={{ mt: '10px' }}>
+        <Button onClick={ () => { refNodeSetSrc.current.click(); } } size={'large'}>Choose Video</Button>
+        <Button disabled={ splitterBookmarks.some(each => each.validation.isValid === false) || srcPath === null } onClick={ asyncSplit } size={'large'}>Execute Split</Button>
+        <Paper
+          sx={{ width: '80%', height: '140px', outline: 'dashed', outlineOffset: '-10px', backgroundColor: 'lightBlue', mt: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white' }}
+          onDragEnter={ (event: React.DragEvent) => { ignoreDragEventDefault(event) } }
+          onDragLeave={ (event: React.DragEvent) => { ignoreDragEventDefault(event) } }
+          onDragOver={ (event: React.DragEvent) => { ignoreDragEventDefault(event) } }
+          onDrop={ (event: React.DragEvent) => {
+            ignoreDragEventDefault(event);
+            const ext = event.dataTransfer.files[0].path.split('.').pop();
+            if (ext !== 'json' && ext !== 'pbf') {
+              const unexpectedFile: IErrObj = { id: 'E001', level: 'critical', msg: `Unexpected file (.${ext}) provided.` };
+              setErrArr([unexpectedFile]);
+              return;
+            }
+            asyncParseTextInjection(event.dataTransfer.files[0].path); }
           }
-          asyncParseTextInjection(event.dataTransfer.files[0].path); }
-        }
-      >
-      </div>
+        >
+          <Stack sx={{ alignItems: 'center', color: 'grey' }}>
+            <Typography sx={{ fontFamily: 'consolas', fontSize: '12px', ml: '2px', mr: '2px' }}>{'Drop here'}</Typography>
+            <Typography sx={{ fontFamily: 'consolas', fontSize: '12px', ml: '2px', mr: '2px' }}>{'.pbf from DAUMPot'}</Typography>
+            <Typography sx={{ fontFamily: 'consolas', fontSize: '12px', ml: '2px', mr: '2px' }}>{'or .json from VLC'}</Typography>
+          </Stack>
+        </Paper>
+      </Grid>
+      <Grid item sm={9}>
+        <Box height={'115px'}>
+          <Typography variant={'h3'} fontFamily={'consolas'} color={'grey'}>{ splitterStatus }</Typography>
+          <Typography variant={'subtitle1'} color={'lightgrey'}>{ srcPath ? `source: ${srcPath}` : '' }</Typography>
+          <Typography variant={'subtitle1'} color={'lightgrey'}>{ outputPath ? `output: ${outputPath}` : '' }</Typography>
+        </Box>
+        <label>{ errArr.map((each) => { return each.msg }) }</label>
+        <Box overflow={'scroll'} height={'450px'} sx={{
+          '& > div:hover': {
+            border: '1px solid'
+          },
+          '&::-webkit-scrollbar': {
+            width: '3px',
+            WebkitAppearance: 'none'
+          },
+          '&::-webkit-scrollbar-thumb': {
+            borderRadius: 8,
+            border: '1px solid',
+            backgroundColor: 'rgba(0 0 0 / 0.5)',
+          },
+          '&::-webkit-scrollbar-thumb:hover': {
+            backgroundColor: 'red',
+          }
+        }}>
+          { splitterBookmarks.map((each, index): JSX.Element => { return <BookmarkForm key={`form_${index}`} bkIdx={index} bkObj={each} plasmid={plasmid} setPlasmid={setPlasmid}/> }) }
+        </Box>
+        <Button disabled={ splitterBookmarks.some(each => each.validation.isValid === false) } onClick={ () => { setSplitterBookmarks([...splitterBookmarks, DEFAULT_BOOKMARK]) } } variant={'outlined'} size={'medium'}>Append Bookmark</Button>
+        <Button onClick={ () => { refNodeSetOutputDir.current.click(); }} variant={'text'} size={'medium'} sx={{ color: 'black', ml: '10px' }}>Output Directory ...</Button>
 
-      <input type={'file'} ref={refNodeSetSrc} accept={'video/*'} onChange={ (event: React.ChangeEvent<HTMLInputElement>) => { asyncSetVideoSource(event.currentTarget.files[0].path) } } hidden/>
-      <input type={'file'} ref={refNodeSetOutputDir} onChange={ (event: React.ChangeEvent<HTMLInputElement>) => {
-          const fullpath = event.currentTarget.files[0].path;
-          const splitted = fullpath.split('\\');
-          splitted.pop();
-          const dir: string = splitted.join('\\');
-          asyncSetOutputPath(dir);
-        } 
-      } hidden/>
-    </Fragment>
+        <input type={'file'} ref={refNodeSetSrc} accept={'video/*'} onChange={ (event: React.ChangeEvent<HTMLInputElement>) => { asyncSetVideoSource(event.currentTarget.files[0].path) } } hidden/>
+        <input type={'file'} ref={refNodeSetOutputDir} onChange={ (event: React.ChangeEvent<HTMLInputElement>) => {
+            const fullpath = event.currentTarget.files[0].path;
+            const splitted = PathUtil.splitIntoDirectories(fullpath);
+            splitted.pop();
+            asyncSetOutputPath(PathUtil.combineAsPath(splitted));
+          } 
+        } hidden/>
+      </Grid>
+    </Grid>
   );
 }
