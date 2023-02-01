@@ -18,12 +18,12 @@ export const FormMarker = ({ onChange, which, markerIndex }: FormMarkerProps) =>
         switch(id) {
             case 'markerTime': {
                 setTimeCode(value);
-                onChange('markerTime', value, markerIndex, which);
+                onChange({value, markerIndex, key: 'markerTime', which});
                 break;
             }
             case 'markerName': {
                 setMarkerName(value);
-                onChange('markerName', value, markerIndex, which);
+                onChange({value, markerIndex, key: 'markerName', which});
                 break;
             }
         }

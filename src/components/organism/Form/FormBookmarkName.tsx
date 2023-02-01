@@ -15,7 +15,7 @@ export const FormBookmarkName = ({ onChange, markerIndex, currentName }: FormBoo
     const inputChangeHandler = (event: React.ChangeEvent<HTMLInputElement>): void => {
         const value = event.target.value;
         setValue(value);
-        onChange('bookmarkName', value, markerIndex);
+        onChange({value, markerIndex, key: 'bookmarkName'});
     };
 
     useEffect(() => {
