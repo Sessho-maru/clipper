@@ -1,5 +1,5 @@
 export type Maybe<T> = T | null;
-export type UserMatable = 'bookmarkName' | 'markerName' | 'markerTime';
+export type PropsOf<T> = Omit<T, '__typename'>;
 
 type Scalars = {
   ID: string;
@@ -26,6 +26,15 @@ export type Bookmark = {
   }
 };
 
+export type BaseArgs = {
+    markerIndex: Readonly<number>;
+    value: Readonly<string>;
+};
+export type ExtensionArgsMarker = {
+    key: keyof PropsOf<Marker>;
+    which?: 'begin' | 'end'
+};
+
 export type Error = {
   __typename?: 'Error',
   id: Readonly<Scalars['ID']>;
@@ -47,3 +56,4 @@ export type InjectionParsed = {
 
 export type ErrorLevel = 'warning' | 'critical';
 export type SplitterStatus = 'idle' | 'splitting' | 'parsing' | 'failed';
+export type UserMatable = 'bookmarkName' | 'markerName' | 'markerTime';
