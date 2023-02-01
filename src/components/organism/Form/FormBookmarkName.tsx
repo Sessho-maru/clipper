@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { TextField, Tooltip } from '@mui/material';
-import useMakeMutable from '../../../hooks/useMakeMutable';
+import useMarkerMutable from '../../../hooks/useMarkerMutable';
 import { FormMutatingPropOf } from 'typedefs/interfaces';
 
 interface FormBookmarkNameProps extends FormMutatingPropOf<'bookmarkName'> {
@@ -10,7 +10,7 @@ interface FormBookmarkNameProps extends FormMutatingPropOf<'bookmarkName'> {
 export const FormBookmarkName = ({ onChange, markerIndex, currentName }: FormBookmarkNameProps) => {
     const [value, setValue] = useState<string>('');
     const inputRef = useRef<HTMLInputElement>(null);
-    const isMutable = useMakeMutable(inputRef);
+    const isMutable = useMarkerMutable(inputRef);
 
     const inputChangeHandler = (event: React.ChangeEvent<HTMLInputElement>): void => {
         const value = event.target.value;
