@@ -26,12 +26,10 @@ export const FormBookmarkName = ({ onChange, markerIndex, currentName }: FormBoo
         <TextField
             ref={inputRef}
             value={value}
-            variant={'standard'}
+            variant={'outlined'}
+            label={'Bookmark Name'}
             disabled={!isMutable}
             onChange={inputChangeHandler}
-            placeholder={'Bookmark name here'}
-            InputLabelProps={{ shrink: true }}
-            InputProps={{ disableUnderline: !isMutable }}
             sx={{
                 ml: '10%',
                 mb: '3%',

@@ -23,6 +23,9 @@ export default function Splitter() {
         const copy = makeRealCopy<Bookmark>(bookmarks[markerIndex]);
 
         // TODO: validate whether value is dirty or not
+        if (value === '') {
+            return;
+        }
 
         copy.bookmarkName = value;
         setBookmarks([...bookmarks.slice(0, markerIndex), copy, ...bookmarks.slice(markerIndex + 1)]);
