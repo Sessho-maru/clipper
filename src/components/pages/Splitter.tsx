@@ -1,22 +1,34 @@
 import { useState } from 'react';
-import { Button } from '@mui/material';
-import { BaseArgs, Bookmark, ExtensionArgsMarker } from 'typedefs/types';
-import { TypeDefault } from '../../const/consts';
+import { Typography } from '@mui/material';
+import { BaseArgs, Bookmark, ChildResponse, ExtensionArgsMarker, PathLike, ApiStatus, Error, Maybe, Marker, PropsOf } from 'typedefs/types';
+import { TypeDefault, TestData } from '../../const/consts';
 import { InputFilePad } from '../molecules/Input';
 import { makeRealCopy } from '../../utils/Utilities';
 import { FormMarkerWrapper } from '../organism/Form/FormMarkerWrapper';
 import { GridContainer, GridItemMenu, GridItemMain } from '../organism/Grid';
 import { FormBookmarkName, FormMarker, FormInnerWrapper, FormWrapper } from '../organism/Form';
+import { SplitApiButton } from '../molecules/Button';
 
 export default function Splitter() {
+    const [error, setError] = useState<Maybe<Error>>(null);
+    const [status, setStatus] = useState<ApiStatus>('idle');
+    const [srcPath, setSrcPath] = useState<Maybe<PathLike>>(null);
+    const [outputPath, setOutputPath] = useState<Maybe<PathLike>>(null);
     const [bookmarks, setBookmarks] = useState<Bookmark[]>([
-        TypeDefault.BOOKMARK,
-        TypeDefault.BOOKMARK,
-        TypeDefault.BOOKMARK,
-        TypeDefault.BOOKMARK,
-        TypeDefault.BOOKMARK,
-        TypeDefault.BOOKMARK
+        TestData._Tbookmark
     ]);
+
+    const changeStatus = (apiStatus: ApiStatus): void => {
+        setStatus(apiStatus);
+    }
+
+    const onSplitFulfilled = (): void => {
+        setStatus('idle');
+    }
+    const onSplitFailed = (err: Error): void => {
+        setStatus('failed');
+        setError(err);
+    }
 
     const bookmarkNameChangeHandler = (arg: BaseArgs): void => {
         const { value, markerIndex } = arg;
@@ -32,7 +44,10 @@ export default function Splitter() {
     };
 
     const markerChangeHandler = (arg: BaseArgs & ExtensionArgsMarker): void => {
-        const { value, markerIndex, key, which } = arg;
+        const { value, markerIndex } = arg;
+        const key: keyof PropsOf<Marker> = arg.key!;
+        const which: 'begin' | 'end' = arg.which!;
+        
         const copy = makeRealCopy<Bookmark>(bookmarks[markerIndex]);
         if (which === 'begin') {
             copy.marker.begin[key] = value;
@@ -53,19 +68,19 @@ export default function Splitter() {
     return (
         <GridContainer>
             <GridItemMenu>
-                <Button size={'large'}>Choose Video</Button>
-                <Button size={'large'}>Execute Split</Button>
+                <SplitApiButton arg={bookmarks} label={'Split Video'} disabled={srcPath === null} onClick={changeStatus} onSuccess={onSplitFulfilled} onFail={onSplitFailed}/>
                 <InputFilePad/>
             </GridItemMenu>
             <GridItemMain>
+                <Typography>{status}</Typography>
                 <FormWrapper>
                     {bookmarks.map((each, index) => {
                         return (
                             <FormInnerWrapper key={index}>
-                                <FormBookmarkName currentName={each.bookmarkName} onChange={bookmarkNameChangeHandler} markerIndex={index}/>
+                                <FormBookmarkName current={each.bookmarkName} onChange={bookmarkNameChangeHandler} markerIndex={index}/>
                                 <FormMarkerWrapper>
-                                    <FormMarker onChange={markerChangeHandler} which={'begin'} markerIndex={index}/>
-                                    <FormMarker onChange={markerChangeHandler} which={'end'} markerIndex={index}/>
+                                    <FormMarker current={each.marker.begin} onChange={markerChangeHandler} which={'begin'} markerIndex={index}/>
+                                    <FormMarker current={each.marker.end} onChange={markerChangeHandler} which={'end'} markerIndex={index}/>
                                 </FormMarkerWrapper>
                             </FormInnerWrapper>
                         ); 

@@ -26,13 +26,21 @@ export type Bookmark = {
   }
 };
 
+export type PathLike = {
+  __typename?: 'PathLike';
+  path: string;
+  kind: 'src' | 'output' | 'parseInjection';
+};
+
 export type BaseArgs = {
-    markerIndex: Readonly<number>;
-    value: Readonly<string>;
+  __typename?: 'BaseArgs';
+  markerIndex: Readonly<number>;
+  value: Readonly<string>;
 };
 export type ExtensionArgsMarker = {
-    key: keyof PropsOf<Marker>;
-    which?: 'begin' | 'end'
+  __typename?: 'ExtensionArgsMarker';
+  key?: keyof PropsOf<Marker>;
+  which?: 'begin' | 'end'
 };
 
 export type Error = {
@@ -54,6 +62,7 @@ export type InjectionParsed = {
   microSecs: Readonly<Array<PlainTimeCode>>;
 };
 
+export type ApiPaths = 'split' | '';
+export type ApiStatus = 'idle' | 'splitting' | 'parsing' | 'failed' | 'fulfilled';
 export type ErrorLevel = 'warning' | 'critical';
-export type SplitterStatus = 'idle' | 'splitting' | 'parsing' | 'failed';
 export type UserMatable = 'bookmarkName' | 'markerName' | 'markerTime';

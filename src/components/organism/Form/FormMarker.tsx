@@ -1,15 +1,16 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Stack, TextField } from '@mui/material';
-import { MaskedTimeCode } from 'typedefs/types';
+import { Marker, MaskedTimeCode } from 'typedefs/types';
 import { FormMutatingPropOf } from 'typedefs/interfaces';
 import { InputTimeCode } from '../../molecules/Input';
 import { TIMECODE } from '../../../const/consts';
 
 interface FormMarkerProps extends FormMutatingPropOf<'markerTime' | 'markerName'> {
+    current: Marker,
     which: 'begin' | 'end';
 }
 
-export const FormMarker = ({ onChange, which, markerIndex }: FormMarkerProps) => {
+export const FormMarker = ({ onChange, which, markerIndex, current }: FormMarkerProps) => {
     const [timeCode, setTimeCode] = useState<MaskedTimeCode>('');
     const [markerName, setMarkerName] = useState<string>('');
 
@@ -18,16 +19,21 @@ export const FormMarker = ({ onChange, which, markerIndex }: FormMarkerProps) =>
         switch(id) {
             case 'markerTime': {
                 setTimeCode(value);
-                onChange({value, markerIndex, key: 'markerTime', which});
+                onChange({key: id, value, markerIndex, which});
                 break;
             }
             case 'markerName': {
                 setMarkerName(value);
-                onChange({value, markerIndex, key: 'markerName', which});
+                onChange({key: id, value, markerIndex, which});
                 break;
             }
         }
     };
+
+    useEffect(() => {
+        setTimeCode(current.markerTime);
+        setMarkerName(current.markerName);
+    }, [current])
 
     return (
         <Stack spacing={1} width={'35%'}>
