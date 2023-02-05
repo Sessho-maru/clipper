@@ -1,33 +1,50 @@
 import { useState } from 'react';
 import { Typography } from '@mui/material';
-import { BaseArgs, Bookmark, ChildResponse, ExtensionArgsMarker, PathLike, ApiStatus, Error, Maybe, Marker, PropsOf } from 'typedefs/types';
+import { BaseArgs, Bookmark, ExtensionArgsMarker, PathLike, ApiStatus, Error, Maybe, Marker, PropsOf, MarkerWhich } from 'typedefs/types';
 import { TypeDefault, TestData } from '../../const/consts';
 import { InputFilePad } from '../molecules/Input';
 import { makeRealCopy } from '../../utils/Utilities';
 import { FormMarkerWrapper } from '../organism/Form/FormMarkerWrapper';
 import { GridContainer, GridItemMenu, GridItemMain } from '../organism/Grid';
 import { FormBookmarkName, FormMarker, FormInnerWrapper, FormWrapper } from '../organism/Form';
-import { SplitApiButton } from '../molecules/Button';
+import { SplitButton, SetSrcPathButton, SetOutputDirButton } from '../molecules/Button';
+import { isPathLike } from '../../utils/Typeguards';
 
 export default function Splitter() {
     const [error, setError] = useState<Maybe<Error>>(null);
     const [status, setStatus] = useState<ApiStatus>('idle');
-    const [srcPath, setSrcPath] = useState<Maybe<PathLike>>(null);
-    const [outputPath, setOutputPath] = useState<Maybe<PathLike>>(null);
+    const [srcPath, setSrcPath] = useState<PathLike>(TypeDefault.SRCPATH);
+    const [outputDir, setOutputDir] = useState<PathLike>(TypeDefault.OUTPUTPATH);
     const [bookmarks, setBookmarks] = useState<Bookmark[]>([
         TestData._Tbookmark
     ]);
 
-    const changeStatus = (apiStatus: ApiStatus): void => {
-        setStatus(apiStatus);
+    const fulfilledHandler = (arg: ApiStatus | PathLike): void => {
+        if (isPathLike(arg)) {
+            switch(arg.kind) {
+                case 'src': {
+                    setSrcPath(arg);
+                    break;
+                }
+                case 'output': {
+                    setOutputDir(arg);
+                    break;
+                }
+            }
+        }
+        else {
+            setStatus(arg);
+        }
     }
 
-    const onSplitFulfilled = (): void => {
-        setStatus('idle');
-    }
-    const onSplitFailed = (err: Error): void => {
-        setStatus('failed');
+    const rejectedHandler = (err: Error): void => {
         setError(err);
+        setStatus('failed');
+        console.log(err.message);
+    }
+
+    const pendingHandler = (arg: ApiStatus): void => {
+        setStatus(arg);
     }
 
     const bookmarkNameChangeHandler = (arg: BaseArgs): void => {
@@ -46,9 +63,10 @@ export default function Splitter() {
     const markerChangeHandler = (arg: BaseArgs & ExtensionArgsMarker): void => {
         const { value, markerIndex } = arg;
         const key: keyof PropsOf<Marker> = arg.key!;
-        const which: 'begin' | 'end' = arg.which!;
+        const which: MarkerWhich = arg.which!;
         
         const copy = makeRealCopy<Bookmark>(bookmarks[markerIndex]);
+
         if (which === 'begin') {
             copy.marker.begin[key] = value;
         }
@@ -68,11 +86,32 @@ export default function Splitter() {
     return (
         <GridContainer>
             <GridItemMenu>
-                <SplitApiButton arg={bookmarks} label={'Split Video'} disabled={srcPath === null} onClick={changeStatus} onSuccess={onSplitFulfilled} onFail={onSplitFailed}/>
+                <SplitButton 
+                    arg={bookmarks} 
+                    label={'Split Video'} 
+                    disabled={srcPath.path === ''} 
+                    onSuccess={fulfilledHandler} 
+                    onFail={rejectedHandler}
+                    onPending={pendingHandler}
+                />
+                <SetSrcPathButton 
+                    arg={srcPath} 
+                    label={'Choose Video'}
+                    onSuccess={fulfilledHandler}
+                    onFail={rejectedHandler}
+                />
+                <SetOutputDirButton 
+                    arg={outputDir} 
+                    label={'Output Dir ...'}
+                    onSuccess={fulfilledHandler}
+                    onFail={rejectedHandler}
+                />
                 <InputFilePad/>
             </GridItemMenu>
             <GridItemMain>
-                <Typography>{status}</Typography>
+                <Typography variant={'h3'} fontFamily={'consolas'}>{status}</Typography>
+                <Typography variant={'subtitle1'} color={'#d98757'}>{ srcPath.path !== '' ? `Video Source: ${srcPath.path}` : 'Video source not yet selected' }</Typography>
+                <Typography variant={'subtitle1'} color={'#d98757'}>{ outputDir.path !== '' ? `Output Directory: ${outputDir.path}` : 'Output directory not yet specified' }</Typography>
                 <FormWrapper>
                     {bookmarks.map((each, index) => {
                         return (
@@ -87,6 +126,6 @@ export default function Splitter() {
                     })}
                 </FormWrapper>
             </GridItemMain>
-        </GridContainer>        
+        </GridContainer>
     )
 }
