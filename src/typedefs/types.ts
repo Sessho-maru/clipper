@@ -29,7 +29,7 @@ export type Bookmark = {
 export type PathLike = {
   __typename?: 'PathLike';
   path: string;
-  kind: 'src' | 'output' | 'parseInjection';
+  kind: PathKind;
 };
 
 export type BaseArgs = {
@@ -40,7 +40,7 @@ export type BaseArgs = {
 export type ExtensionArgsMarker = {
   __typename?: 'ExtensionArgsMarker';
   key?: keyof PropsOf<Marker>;
-  which?: 'begin' | 'end'
+  which?: MarkerWhich;
 };
 
 export type Error = {
@@ -63,6 +63,8 @@ export type InjectionParsed = {
 };
 
 export type ApiPaths = 'split' | '';
-export type ApiStatus = 'idle' | 'splitting' | 'parsing' | 'failed' | 'fulfilled';
+export type ApiStatus = 'idle' | 'splitting' | 'parsing' | 'pending' | 'failed' | 'fulfilled';
+export type PathKind = 'src' | 'output';
+export type MarkerWhich = 'begin' | 'end';
 export type ErrorLevel = 'warning' | 'critical';
 export type UserMatable = 'bookmarkName' | 'markerName' | 'markerTime';

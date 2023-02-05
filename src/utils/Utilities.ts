@@ -1,4 +1,4 @@
-import { MaskedTimeCode, PlainTimeCode } from "typedefs/types";
+import { MaskedTimeCode, PlainTimeCode } from "../typedefs/types";
 import { PUNCS_FORBIDDEN, TIMECODE } from "../const/consts";
 
 function isNumeric(char: string) {
