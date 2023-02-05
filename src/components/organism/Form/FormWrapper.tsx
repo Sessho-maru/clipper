@@ -24,7 +24,7 @@ const wrapperStyle = {
 
 export const FormWrapper = ({ children }: FormWrapperProps) => {
     return (
-        <Box overflow={'scroll'} height={'450px'} sx={wrapperStyle}>
+        <Box overflow={'scroll'} height={'450px'} paddingTop={'30px'} sx={wrapperStyle}>
             { children }    
         </Box>
     );

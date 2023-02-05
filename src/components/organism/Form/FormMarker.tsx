@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { Stack, TextField } from '@mui/material';
-import { Marker, MaskedTimeCode } from 'typedefs/types';
+import { Marker, MarkerWhich, MaskedTimeCode } from 'typedefs/types';
 import { FormMutatingPropOf } from 'typedefs/interfaces';
 import { InputTimeCode } from '../../molecules/Input';
 import { TIMECODE } from '../../../const/consts';
 
 interface FormMarkerProps extends FormMutatingPropOf<'markerTime' | 'markerName'> {
     current: Marker,
-    which: 'begin' | 'end';
+    which: MarkerWhich;
 }
 
 export const FormMarker = ({ onChange, which, markerIndex, current }: FormMarkerProps) => {
