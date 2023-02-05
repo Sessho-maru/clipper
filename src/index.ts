@@ -62,7 +62,8 @@ const createWindow = (): void => {
   // Open the DevTools.
   mainWindow.webContents.openDevTools();
 
-  childProcess = spawn('node', [path.join(__dirname, 'src/server')]);
+  const root = (__dirname.split('\\').slice(0, -2)).join('\\');
+  childProcess = spawn('node', [path.join(root, 'src/server')]);
 };
 
 // This method will be called when Electron has finished
