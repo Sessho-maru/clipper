@@ -8,7 +8,7 @@ export const GridContainer = ({ children }: GridContainerProps) => {
     return (
         <Grid
             container
-            spacing={0}
+            spacing={2}
             direction={'row'}
             alignItems={'start'}
         >
