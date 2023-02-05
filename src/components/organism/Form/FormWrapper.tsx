@@ -1,30 +1,24 @@
-import { Box } from "@mui/material";
+import { Box, SxProps } from "@mui/material";
 
 interface FormWrapperProps {
     children: React.ReactNode;
 }
 
-const wrapperStyle = {
-    '& > div:hover': {
-        // border: '2px solid'
-    },
+const scrollBarStyle: SxProps = {
     '&::-webkit-scrollbar': {
-        width: '3px',
+        width: '10px',
         WebkitAppearance: 'none'
     },
     '&::-webkit-scrollbar-thumb': {
         borderRadius: 8,
         border: '1px solid',
-        backgroundColor: 'rgba(0 0 0 / 0.5)',
+        backgroundColor: 'rgba(0 0 0 / 0.05)',
     },
-    '&::-webkit-scrollbar-thumb:hover': {
-        backgroundColor: 'red',
-    }
 }
 
 export const FormWrapper = ({ children }: FormWrapperProps) => {
     return (
-        <Box overflow={'scroll'} height={'450px'} paddingTop={'30px'} sx={wrapperStyle}>
+        <Box overflow={'scroll'} height={'655px'} paddingTop={'30px'} sx={scrollBarStyle}>
             { children }    
         </Box>
     );

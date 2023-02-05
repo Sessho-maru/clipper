@@ -30,10 +30,11 @@ export const FormBookmarkName = ({ onChange, markerIndex, current }: FormBookmar
             label={'Bookmark Name'}
             disabled={!isMutable}
             onChange={inputChangeHandler}
+            size={'small'}
             sx={{
                 ml: '10%',
-                mb: '3%',
-                width: '80%',
+                mb: '1%',
+                width: '80%'
             }}
         />
     );

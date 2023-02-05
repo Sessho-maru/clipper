@@ -6,11 +6,14 @@ interface FormInnerWrapperProps {
 
 export const FormInnerWrapper = ({ children }: FormInnerWrapperProps) => {
     return (
-        <Box
-            width={'95%'}
-            mb={6}
-        >
-            { children }
+        <Box padding={'10px'} sx={{':hover': {backgroundColor: 'rgba(0 0 0 / 0.05)', borderRadius: '10px'}}}>
+            <Box
+                width={'95%'}
+                mt={1}
+                mb={3}
+            >
+                { children }
+            </Box>
         </Box>
     );
 }

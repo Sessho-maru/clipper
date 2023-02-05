@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Typography } from '@mui/material';
+import { Box, Button, Typography } from '@mui/material';
 import { BaseArgs, Bookmark, ExtensionArgsMarker, PathLike, ApiStatus, Error, Maybe, Marker, PropsOf, MarkerWhich } from 'typedefs/types';
 import { TypeDefault, TestData } from '../../const/consts';
 import { InputFilePad } from '../molecules/Input';
@@ -45,6 +45,10 @@ export default function Splitter() {
 
     const pendingHandler = (arg: ApiStatus): void => {
         setStatus(arg);
+    }
+
+    const appendBookmark = (): void => {
+        setBookmarks([...bookmarks, TypeDefault.BOOKMARK]);
     }
 
     const bookmarkNameChangeHandler = (arg: BaseArgs): void => {
@@ -107,6 +111,7 @@ export default function Splitter() {
                     onFail={rejectedHandler}
                 />
                 <InputFilePad/>
+                <Button onClick={() => { appendBookmark() }} sx={{ mt: 1 }}>{'Add a Bookmark'}</Button>
             </GridItemMenu>
             <GridItemMain>
                 <Typography variant={'h3'} fontFamily={'consolas'}>{status}</Typography>
