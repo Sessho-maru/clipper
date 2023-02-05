@@ -13,15 +13,9 @@ async function trySplit(arg: Bookmark[]): Promise<ChildResponse> {
     res = err as ChildResponse;
   }
 
-  return new Promise<ChildResponse>((resolve, reject) => {
-    if (res.error) {
-      reject(res);
-    }
-    else {
-      resolve({ error: null, message: 'OK' });
-    }
-  })
+  return res;
 }
+
 async function runSplitProcess(bookmark: Bookmark): Promise<ChildResponse> {
   const axiosConfig: AxiosRequestConfig = {
     method: 'POST',

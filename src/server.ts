@@ -1,19 +1,17 @@
 import { exec } from 'child_process';
 import { createServer } from 'http'
-import { readFile } from 'fs';
-import { Error, Bookmark, ChildResponse } from '../src/typedefs/types';
-
+import { Bookmark, ChildResponse } from './typedefs/types';
 
 const host = 'localhost'
 const port = 8080;
 let srcPath: string;
 let srcName: string;
-let outputPath: string;
+let outputDir: string;
 
 function split(arg: Bookmark): Promise<ChildResponse> {
   const { bookmarkName, marker } = arg;
   return new Promise<ChildResponse>((resolve, reject) => {
-    exec(`ffmpeg -ss ${marker.begin} -to ${marker.end} -i "${srcPath}\\${srcName}" -c copy "${outputPath ?? srcPath}\\${bookmarkName}.mp4"`, (err, stdout, stderr) => {
+    exec(`ffmpeg -ss ${marker.begin.markerTime} -to ${marker.end.markerTime} -i "${srcPath}\\${srcName}" -c copy "${outputDir ?? srcPath}\\${bookmarkName}.mp4"`, (err, stdout, stderr) => {
       if (err) {
         const res: ChildResponse = {
           error: {
@@ -37,17 +35,15 @@ function split(arg: Bookmark): Promise<ChildResponse> {
   });
 }
 
-/*
 function setSrc(path: string): string {
-  const splitted = PathUtil.splitIntoDirectories(path);
-  const filename = splitted.pop();
+  const splitted = path.split('\\');
+  const filename = splitted.pop()!;
 
-  srcPath = PathUtil.combineAsPath(splitted);
+  srcPath = splitted.join('\\');
   srcName = filename;
 
   return `${srcPath}\\${srcName}`;
 }
-*/
 
 // function parseInjection(arg: { raw: string, out: string }, modeFlg: 'range' | 'chapter'): IParsedRaw[] {
 //   const matchBkName: string[] = arg.raw.match(/\*.+\*/g);
@@ -126,25 +122,25 @@ const server = createServer((request, response) => {
       });
       break;
     }
-    // case '/api/setSrc':
-    // case '/api/setOuputPath': {
-    //   request.on('data', (chunk: Uint8Array) => {
-    //     const path = chunk.toString();
-    //     const fullPath = request.url === '/api/setSrc'
-    //                     ? setSrc(path)
-    //                     : outputPath = path;
+    case '/api/setSrc':
+    case '/api/setOuputDir': {
+      request.on('data', (chunk: Uint8Array) => {
+        const path = chunk.toString();
+        const fullPath = request.url === '/api/setSrc'
+                          ? setSrc(path)
+                          : outputDir = path;
 
-    //     response.setHeader('Access-Control-Allow-Origin', '*');
-    //     response.write(
-    //       JSON.stringify({
-    //         isSuccess: true,
-    //         message: fullPath
-    //       })
-    //     );
-    //     response.end();
-    //   });
-    //   break;
-    // }
+        response.setHeader('Access-Control-Allow-Origin', '*');
+        response.write(
+          JSON.stringify({
+            error: null,
+            message: fullPath
+          })
+        );
+        response.end();
+      });
+      break;
+    }
     // case '/api/parseInjection': {
     //   request.on('data', (chunk: Uint8Array) => {
     //     response.setHeader('Access-Control-Allow-Origin', '*');
