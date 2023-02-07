@@ -10,7 +10,7 @@ export const FormInnerWrapper = ({ children }: FormInnerWrapperProps) => {
             <Box
                 width={'95%'}
                 mt={1}
-                mb={3}
+                mb={1}
             >
                 { children }
             </Box>

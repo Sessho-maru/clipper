@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Box, Button, Typography } from '@mui/material';
-import { BaseArgs, Bookmark, ExtensionArgsMarker, PathLike, ApiStatus, Error, Maybe, Marker, PropsOf, MarkerWhich } from 'typedefs/types';
-import { TypeDefault, TestData } from '../../const/consts';
+import { BaseArgs, Bookmark, ExtensionArgsMarker, PathLike, ApiStatus, Error, Maybe, Marker, PropsOf, MarkerWhich, MaskedTimeCode } from 'typedefs/types';
+import { TypeDefault, TestData, TIMECODE } from '../../const/consts';
 import { InputFilePad } from '../molecules/Input';
 import { makeRealCopy } from '../../utils/Utilities';
 import { FormMarkerWrapper } from '../organism/Form/FormMarkerWrapper';
@@ -11,15 +11,13 @@ import { SplitButton, SetSrcPathButton, SetOutputDirButton } from '../molecules/
 import { isPathLike } from '../../utils/Typeguards';
 
 export default function Splitter() {
-    const [error, setError] = useState<Maybe<Error>>(null);
     const [status, setStatus] = useState<ApiStatus>('idle');
     const [srcPath, setSrcPath] = useState<PathLike>(TypeDefault.SRCPATH);
     const [outputDir, setOutputDir] = useState<PathLike>(TypeDefault.OUTPUTPATH);
-    const [bookmarks, setBookmarks] = useState<Bookmark[]>([
-        TestData._Tbookmark
-    ]);
+    const [bookmarks, setBookmarks] = useState<Bookmark[]>([TypeDefault.BOOKMARK]);
+    const [maybeError, setMaybeError] = useState<Maybe<Error>>(null);
 
-    const fulfilledHandler = (arg: ApiStatus | PathLike): void => {
+    const fulfillingHandler = (arg: ApiStatus | PathLike): void => {
         if (isPathLike(arg)) {
             switch(arg.kind) {
                 case 'src': {
@@ -37,9 +35,9 @@ export default function Splitter() {
         }
     }
 
-    const rejectedHandler = (err: Error): void => {
-        setError(err);
+    const rejectionHandler = (err: Error): void => {
         setStatus('failed');
+        setMaybeError(err);
         console.log(err.message);
     }
 
@@ -66,22 +64,19 @@ export default function Splitter() {
 
     const markerChangeHandler = (arg: BaseArgs & ExtensionArgsMarker): void => {
         const { value, markerIndex } = arg;
-        const key: keyof PropsOf<Marker> = arg.key!;
-        const which: MarkerWhich = arg.which!;
-        
         const copy = makeRealCopy<Bookmark>(bookmarks[markerIndex]);
 
-        if (which === 'begin') {
-            copy.marker.begin[key] = value;
-        }
-        else {
-            copy.marker.end[key] = value;
-        }
+        const key: keyof PropsOf<Marker> = arg.key!;
+        const which: MarkerWhich = arg.which!;
 
         if (key === 'markerName') {
+            copy.marker[which].markerName = value;
             copy.bookmarkName = copy.marker.begin.markerName.concat(
                 copy.marker.end.markerName === '' ? '' : ' >  '.concat(copy.marker.end.markerName)
             );
+        }
+        else {
+            copy.marker[which][key] = (value as MaskedTimeCode);
         }
 
         setBookmarks([...bookmarks.slice(0, markerIndex), copy, ...bookmarks.slice(markerIndex + 1)]);
@@ -94,21 +89,21 @@ export default function Splitter() {
                     arg={bookmarks} 
                     label={'Split Video'} 
                     disabled={srcPath.path === ''} 
-                    onSuccess={fulfilledHandler} 
-                    onFail={rejectedHandler}
+                    onSuccess={fulfillingHandler} 
+                    onFail={rejectionHandler}
                     onPending={pendingHandler}
                 />
                 <SetSrcPathButton 
                     arg={srcPath} 
                     label={'Choose Video'}
-                    onSuccess={fulfilledHandler}
-                    onFail={rejectedHandler}
+                    onSuccess={fulfillingHandler}
+                    onFail={rejectionHandler}
                 />
                 <SetOutputDirButton 
                     arg={outputDir} 
                     label={'Output Dir ...'}
-                    onSuccess={fulfilledHandler}
-                    onFail={rejectedHandler}
+                    onSuccess={fulfillingHandler}
+                    onFail={rejectionHandler}
                 />
                 <InputFilePad/>
                 <Button onClick={() => { appendBookmark() }} sx={{ mt: 1 }}>{'Add a Bookmark'}</Button>
@@ -123,9 +118,10 @@ export default function Splitter() {
                             <FormInnerWrapper key={index}>
                                 <FormBookmarkName current={each.bookmarkName} onChange={bookmarkNameChangeHandler} markerIndex={index}/>
                                 <FormMarkerWrapper>
-                                    <FormMarker current={each.marker.begin} onChange={markerChangeHandler} which={'begin'} markerIndex={index}/>
-                                    <FormMarker current={each.marker.end} onChange={markerChangeHandler} which={'end'} markerIndex={index}/>
+                                    <FormMarker current={each.marker} which={'begin'} onChange={markerChangeHandler} markerIndex={index}/>
+                                    <FormMarker current={each.marker} which={'end'} onChange={markerChangeHandler} markerIndex={index}/>
                                 </FormMarkerWrapper>
+                                <Typography variant={'caption'} height={'10px'}>{'this is Test'}</Typography>
                             </FormInnerWrapper>
                         ); 
                     })}

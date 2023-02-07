@@ -23,7 +23,7 @@ export type Bookmark = {
   marker: {
     begin: Marker;
     end: Marker;
-  }
+  };
 };
 
 export type PathLike = {

@@ -18,7 +18,7 @@ const scrollBarStyle: SxProps = {
 
 export const FormWrapper = ({ children }: FormWrapperProps) => {
     return (
-        <Box overflow={'scroll'} height={'655px'} paddingTop={'30px'} sx={scrollBarStyle}>
+        <Box overflow={'scroll'} height={'655px'} paddingTop={'10px'} sx={scrollBarStyle}>
             { children }    
         </Box>
     );

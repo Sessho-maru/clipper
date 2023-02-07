@@ -35,6 +35,14 @@ function sanitizeMarerkName(arg: string): string {
 
   return out;
 }
+function isNameDirty(arg: string): boolean {
+    for (const char of arg) {
+        if (PUNCS_FORBIDDEN.includes(char) && char !== '>') {
+            return true;
+        }
+    }
+    return false;
+}
 
 function splitPath(pathLike: string): string[] {
   return pathLike.split('\\');
@@ -52,4 +60,4 @@ export function makeRealCopy<T>(arg: T): T {
 
 export const PathUtil = { splitPath, combineDirs, getFilename }
 export const TimeCodeUtil = { mask, unmask, produceTimeCodeFromMs };
-export const MarkerNameUtil = { sanitizeMarerkName };
+export const MarkerNameUtil = { sanitizeMarerkName, isNameDirty };

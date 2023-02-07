@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { TextField, Tooltip } from '@mui/material';
 import useMarkerMutable from '../../../hooks/useMarkerMutable';
 import { FormMutatingPropOf } from 'typedefs/interfaces';
+import { MarkerNameUtil } from '../../../utils/Utilities';
 
 interface FormBookmarkNameProps extends FormMutatingPropOf<'bookmarkName'> {
     current: string;
@@ -9,6 +10,7 @@ interface FormBookmarkNameProps extends FormMutatingPropOf<'bookmarkName'> {
 
 export const FormBookmarkName = ({ onChange, markerIndex, current }: FormBookmarkNameProps) => {
     const [value, setValue] = useState<string>('');
+    const [isDirtyName, setIsDirtyName] = useState<boolean>(false);
     const inputRef = useRef<HTMLInputElement>(null);
     const isMutable = useMarkerMutable(inputRef);
 
@@ -20,6 +22,7 @@ export const FormBookmarkName = ({ onChange, markerIndex, current }: FormBookmar
 
     useEffect(() => {
         setValue(current);
+        setIsDirtyName(MarkerNameUtil.isNameDirty(current));
     }, [current])
 
     return (
@@ -30,6 +33,7 @@ export const FormBookmarkName = ({ onChange, markerIndex, current }: FormBookmar
             label={'Bookmark Name'}
             disabled={!isMutable}
             onChange={inputChangeHandler}
+            color={isDirtyName ? 'warning' : undefined}
             size={'small'}
             sx={{
                 ml: '10%',

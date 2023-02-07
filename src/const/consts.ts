@@ -4,8 +4,8 @@ export const PUNCS_FORBIDDEN = ['<', '>', '/', '\\', '|', '*', '?', ':', '"'];
 export const TIMECODE = {
     MASK: '00{:}00{:}00{.}000',
     LENGTH: {
-        HHMMSS: 6,
-        HHMMSSMS: 9,
+        HHMMSS: 8,
+        HHMMSSMS: 12,
     }
 };
 export const INPUT_LABEL = {
