@@ -1,5 +1,5 @@
 import { MaskedTimeCode, PlainTimeCode } from "../typedefs/types";
-import { PUNCS_FORBIDDEN, TIMECODE } from "../const/consts";
+import { PUNCS_FORBIDDEN, PUNCS_FORBIDDEN_FRONTAL, TIMECODE } from "../const/consts";
 
 function isNumeric(char: string) {
   return char.charCodeAt(0) > 47 && char.charCodeAt(0) < 58;
@@ -37,7 +37,7 @@ function sanitizeMarerkName(arg: string): string {
 }
 function isNameDirty(arg: string): boolean {
     for (const char of arg) {
-        if (PUNCS_FORBIDDEN.includes(char) && char !== '>') {
+        if (PUNCS_FORBIDDEN_FRONTAL.includes(char)) {
             return true;
         }
     }

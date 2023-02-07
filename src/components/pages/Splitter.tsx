@@ -121,7 +121,6 @@ export default function Splitter() {
                                     <FormMarker current={each.marker} which={'begin'} onChange={markerChangeHandler} markerIndex={index}/>
                                     <FormMarker current={each.marker} which={'end'} onChange={markerChangeHandler} markerIndex={index}/>
                                 </FormMarkerWrapper>
-                                <Typography variant={'caption'} height={'10px'}>{'this is Test'}</Typography>
                             </FormInnerWrapper>
                         ); 
                     })}
