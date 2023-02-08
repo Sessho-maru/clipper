@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { Box, SxProps } from "@mui/material";
-import { InputErrorContext } from "../../../context/InputErrorContext";
-import { Error, Maybe } from 'typedefs/types';
+import { InputErrorContext, MarkerFormInputError } from "../../../context/InputErrorContext";
 
 interface FormWrapperProps {
     children: React.ReactNode;
@@ -20,10 +19,10 @@ const scrollBarStyle: SxProps = {
 }
 
 export const FormWrapper = ({ children }: FormWrapperProps) => {
-    const [maybeInputError, setMaybeInputError] = useState<Maybe<Error>>(null);
+    const [inputErrorArr, setInputErrorArr] = useState<MarkerFormInputError[]>([]);
 
     return (
-        <InputErrorContext.Provider value={{ maybeInputError, setMaybeInputError }}>
+        <InputErrorContext.Provider value={{ inputErrorArr, setInputErrorArr }}>
             <Box overflow={'scroll'} height={'655px'} paddingTop={'10px'} sx={scrollBarStyle}>
                 { children }    
             </Box>

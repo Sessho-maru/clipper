@@ -53,7 +53,6 @@ export default function Splitter() {
         const { value, markerIndex } = arg;
         const copy = makeRealCopy<Bookmark>(bookmarks[markerIndex]);
 
-        // TODO: validate whether value is dirty or not
         if (value === '') {
             return;
         }
@@ -115,7 +114,7 @@ export default function Splitter() {
                 <FormWrapper>
                     {bookmarks.map((each, index) => {
                         return (
-                            <FormInnerWrapper key={index}>
+                            <FormInnerWrapper key={index} markerIndex={index}>
                                 <FormBookmarkName current={each.bookmarkName} onChange={bookmarkNameChangeHandler} markerIndex={index}/>
                                 <FormMarkerWrapper>
                                     <FormMarker current={each.marker} which={'begin'} onChange={markerChangeHandler} markerIndex={index}/>
