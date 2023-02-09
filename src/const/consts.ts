@@ -61,5 +61,11 @@ const _TsrcPath: PathLike = {
   kind: 'src',
 }
 
+export const ERROR_CODE = {
+    inValidBeginEndTimeCode: 'E001',
+    curruptedTimeCode: 'E002',
+    dirtyBookmarkName: 'W000'
+}
+
 export const TypeDefault = { BOOKMARK, MARKER, SRCPATH, OUTPUTPATH };
 export const TestData = { _Tbookmark, _TsrcPath };

@@ -2,55 +2,62 @@ import React, { useContext, useEffect, useRef, useState } from 'react';
 import { TextField } from '@mui/material';
 import useMarkerMutable from '../../../hooks/useMarkerMutable'; // TODO rename to useMakeMarkerMutable
 import { FormMutatingPropOf } from 'typedefs/interfaces';
-import { MarkerNameUtil } from '../../../utils/Utilities';
-import { InputErrorContext } from '../../../context/InputErrorContext';
-import { PUNCS_FORBIDDEN_FRONTAL } from '../../../const/consts';
+import { makeRealCopy } from '../../../utils/Utilities';
+import { InputErrorContext, MarkerFormInputError } from '../../../context/InputErrorContext';
+import { ERROR_CODE } from '../../../const/consts';
+import { isDirtyName } from '../../../utils/Validator';
+import { Error, Maybe } from 'typedefs/types';
 
 interface FormBookmarkNameProps extends FormMutatingPropOf<'bookmarkName'> {
     current: string;
 }
 
 export const FormBookmarkName = ({ onChange, markerIndex, current }: FormBookmarkNameProps) => {
-    const [value, setValue] = useState<string>('');
+    const [bookmarkName, setBookmarkName] = useState<string>('');
+
     const inputRef = useRef<HTMLInputElement>(null);
     const isMutable = useMarkerMutable(inputRef);
 
     const { inputErrorArr, setInputErrorArr } = useContext(InputErrorContext);
-    const errorIndex = inputErrorArr.findIndex(each => (each.markerIndex === markerIndex && each.where === 'markerName'));
+    const errorIndex = inputErrorArr.findIndex(each => (each.markerIndex === markerIndex && each.error.id === ERROR_CODE.dirtyBookmarkName));
 
     const inputChangeHandler = (event: React.ChangeEvent<HTMLInputElement>): void => {
         const value = event.target.value;
 
-        const isDirty = MarkerNameUtil.isNameDirty(value);
-        if (isDirty) {
-            setInputErrorArr([
-                ...inputErrorArr,{
-                    markerIndex,
-                    where: 'markerName',
-                    error: {
-                        id: 'W000',
-                        level: 'warning',
-                        message: `Any forbidden character '${PUNCS_FORBIDDEN_FRONTAL.join(`','`)}' will be repalced into '_'`
+        const maybeError: Maybe<Error> = isDirtyName(value);
+        if (maybeError) {
+            const alreadyExist = inputErrorArr.findIndex(each => each.markerIndex === markerIndex && each.error.id === maybeError.id);
+
+            if (alreadyExist === -1) {
+                setInputErrorArr([
+                    ...inputErrorArr, {
+                        markerIndex,
+                        where: 'markerName',
+                        error: maybeError
                     }
-                }
-            ]);
+                ]);
+            }
         }
         else {
-            setInputErrorArr(inputErrorArr.filter(each => (each.markerIndex !== markerIndex && each.where !== 'markerName')));
+            if (errorIndex >= 0) {
+                const copy = makeRealCopy<MarkerFormInputError[]>(inputErrorArr);
+                copy.splice(errorIndex, 1);
+                setInputErrorArr(copy);
+            }
         }
 
-        setValue(value);
+        setBookmarkName(value);
         onChange({value, markerIndex});
     };
 
     useEffect(() => {
-        setValue(current);
-    }, [current])
+        setBookmarkName(current);
+    }, [current]);
 
     return (
         <TextField
             ref={inputRef}
-            value={value}
+            value={bookmarkName}
             variant={'outlined'}
             label={'Bookmark Name'}
             disabled={!isMutable}

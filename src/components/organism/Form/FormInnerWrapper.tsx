@@ -1,7 +1,7 @@
 import { Box, Typography } from "@mui/material"
-import { useContext, useState } from "react";
+import { useContext, useRef, useState } from "react";
 import { Error, Maybe } from "typedefs/types";
-import { InputErrorContext } from "../../../context/InputErrorContext";
+import { InputErrorContext, MarkerFormInputError } from "../../../context/InputErrorContext";
 
 interface FormInnerWrapperProps {
     markerIndex: number,
@@ -9,18 +9,13 @@ interface FormInnerWrapperProps {
 }
 
 export const FormInnerWrapper = ({ markerIndex, children }: FormInnerWrapperProps) => {
+    const refFormError = useRef<Maybe<Error>>(null);
     const { inputErrorArr } = useContext(InputErrorContext);
 
-    const result = inputErrorArr.find(each => each.markerIndex === markerIndex);
-    const maybeError: Maybe<Error> = result ? result.error : null;
+    const resultArr = inputErrorArr.filter(each => each.markerIndex === markerIndex);
+    const errors = resultArr.map((each) => { return each.error });
 
-    let isCritical = undefined;
-    let errorMessage = '';
-
-    if (maybeError) {
-        isCritical = (maybeError.level === 'critical');
-        errorMessage = maybeError.message;
-    }
+    refFormError.current = errors.pop() ?? null;
 
     return (
         <Box padding={'10px'} sx={{':hover': {backgroundColor: 'rgba(0 0 0 / 0.05)', borderRadius: '10px'}}}>
@@ -32,7 +27,12 @@ export const FormInnerWrapper = ({ markerIndex, children }: FormInnerWrapperProp
                 { children }
             </Box>
             <Box display={'flex'} justifyContent={'center'} width={1} height={'15px'}>
-                <Typography variant={'caption'} color={ (isCritical === true) ? 'red' : '#ff5722' }>{ errorMessage }</Typography>
+                <Typography 
+                    variant={'caption'} 
+                    color={ (refFormError.current) ? refFormError.current.level === 'critical' ? 'red' : '#ff5722' : undefined }
+                >
+                    { (refFormError.current) ? refFormError.current.message : '' }
+                </Typography>
             </Box>
         </Box>
     );

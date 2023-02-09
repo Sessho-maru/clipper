@@ -87,7 +87,7 @@ export default function Splitter() {
                 <SplitButton 
                     arg={bookmarks} 
                     label={'Split Video'} 
-                    disabled={srcPath.path === ''} 
+                    disabled={srcPath.path === ''} // TODO check if there is a critial input error
                     onSuccess={fulfillingHandler} 
                     onFail={rejectionHandler}
                     onPending={pendingHandler}
