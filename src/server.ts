@@ -1,6 +1,8 @@
 import { exec } from 'child_process';
+import { readFile } from 'fs';
 import { createServer } from 'http'
-import { Bookmark, ChildResponse } from './typedefs/types';
+import { ERROR_CODE } from './const/consts';
+import { Bookmark, ChildResponse, Error, PbfParsed } from './typedefs/types';
 
 const host = 'localhost'
 const port = 8080;
@@ -15,7 +17,7 @@ function split(arg: Bookmark): Promise<ChildResponse> {
       if (err) {
         const res: ChildResponse = {
           error: {
-            id: 'E000',
+            id: ERROR_CODE.ffmpegCommandRejected,
             level: 'critical',
             message: err.message
           },
@@ -45,52 +47,52 @@ function setSrc(path: string): string {
   return `${srcPath}\\${srcName}`;
 }
 
-// function parseInjection(arg: { raw: string, out: string }, modeFlg: 'range' | 'chapter'): IParsedRaw[] {
-//   const matchBkName: string[] = arg.raw.match(/\*.+\*/g);
-//   const matchBkMs: string[] = arg.raw.match(/[0-9]+=[0-9]+/g);
+function parsePBF(arg: { raw: string, out: string }, modeFlg: 'range' | 'chapter'): PbfParsed[] {
+  const matchBookmarkNames: string[] = arg.raw.match(/\*.+\*/g)!;
+  const matchMilliSecs: string[] = arg.raw.match(/[0-9]+=[0-9]+/g)!;
 
-//   const isEven = (matchBkName.length % 2) === 0;
-//   const loopSize = modeFlg === 'range' 
-//                     ? isEven 
-//                       ? matchBkName.length / 2 
-//                       : Math.floor(matchBkName.length / 2)
-//                     : matchBkName.length;
+  const isEven = (matchBookmarkNames.length % 2) === 0;
+  const loopSize = modeFlg === 'range' 
+                    ? isEven 
+                      ? matchBookmarkNames.length / 2 
+                      : Math.floor(matchBookmarkNames.length / 2)
+                    : matchBookmarkNames.length;
 
-//   const bkNameArr: string[][] = [];
-//   const bkMsArr: string[][] = [];
+  const bookmarkNames: string[][] = [];
+  const milliSecs: string[][] = [];
 
-//   if (modeFlg === 'range') {
-//     for (let i = 0; i < loopSize; ++i) {
-//       bkNameArr.push(matchBkName.slice(i * 2, (i * 2) + 2));
-//     }
-//     if (!isEven) {
-//       bkNameArr.push([matchBkName[matchBkName.length - 1]]);
-//     }
+  if (modeFlg === 'range') {
+    for (let i = 0; i < loopSize; ++i) {
+      bookmarkNames.push(matchBookmarkNames.slice(i * 2, (i * 2) + 2));
+    }
+    if (!isEven) {
+      bookmarkNames.push([matchBookmarkNames[matchBookmarkNames.length - 1]]);
+    }
 
-//     for (let i = 0; i < loopSize; ++i) {
-//       bkMsArr.push(matchBkMs.slice(i * 2, (i * 2) + 2));
-//     }
-//     if (!isEven) {
-//       bkMsArr.push([matchBkMs[matchBkMs.length - 1]]);
-//     }
-//   }
-//   else {
-//     for (let i = 0; i < loopSize; ++i) {
-//       bkNameArr.push([matchBkName[i]]);
-//       bkMsArr.push([matchBkMs[i]]);
-//     }
-//   }
+    for (let i = 0; i < loopSize; ++i) {
+      milliSecs.push(matchMilliSecs.slice(i * 2, (i * 2) + 2));
+    }
+    if (!isEven) {
+      milliSecs.push([matchMilliSecs[matchMilliSecs.length - 1]]);
+    }
+  }
+  else {
+    for (let i = 0; i < loopSize; ++i) {
+      bookmarkNames.push([matchBookmarkNames[i]]);
+      milliSecs.push([matchMilliSecs[i]]);
+    }
+  }
   
-//   const out: IParsedRaw[] = [];
-//   for (let i = 0; i < loopSize; ++i) {
-//     out.push({
-//       nameArr: bkNameArr[i],
-//       msArr: bkMsArr[i],
-//     });
-//   }
+  const out: PbfParsed[] = [];
+  for (let i = 0; i < loopSize; ++i) {
+    out.push({
+      bookmarkNames: bookmarkNames[i],
+      milliSecs: milliSecs[i],
+    });
+  }
 
-//   return out;
-// }
+  return out;
+}
 
 const server = createServer((request, response) => {
   switch(request.url) {
@@ -141,36 +143,40 @@ const server = createServer((request, response) => {
       });
       break;
     }
-    // case '/api/parseInjection': {
-    //   request.on('data', (chunk: Uint8Array) => {
-    //     response.setHeader('Access-Control-Allow-Origin', '*');
+    case '/api/parsePBF': {
+      request.on('data', (chunk: Uint8Array) => {
+        response.setHeader('Access-Control-Allow-Origin', '*');
 
-    //     const path = chunk.toString();
-    //     readFile(path, 'utf16le', (err, raw) => {
-    //       if (err) {
-    //         response.write(
-    //           JSON.stringify({
-    //             isSuccess: false,
-    //             message: `Failed to open the given file ${PathUtil.getFilename(path)}`,
-    //           })
-    //         );
-    //       }
-    //       else {
-    //         const out = '';
-    //         const parsed = parseInjection({ raw, out }, 'range');
+        const path = chunk.toString();
+        readFile(path, 'utf16le', (err, raw) => {
+          if (err) {
+            response.write(
+              JSON.stringify({
+                error: {
+                  id: ERROR_CODE.failedToOpenFile,
+                  level: 'critical',
+                  message: err.message,
+                },
+                message: `Failed to open the given file path ${path.split('\\').pop()}`
+              })
+            );
+          }
+          else {
+            const out = '';
+            const parsed = parsePBF({ raw, out }, 'range');
 
-    //         response.write(
-    //           JSON.stringify({
-    //             isSuccess: true,
-    //             message: JSON.stringify(parsed),
-    //           })
-    //         );
-    //       }
-    //       response.end();
-    //     });
-    //   });
-    //   break;
-    // }
+            response.write(
+              JSON.stringify({
+                error: null,
+                message: JSON.stringify(parsed),
+              })
+            );
+          }
+          response.end();
+        });
+      });
+      break;
+    }
   }
 });
 

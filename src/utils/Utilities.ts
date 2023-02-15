@@ -1,20 +1,25 @@
-import { MaskedTimeCode, PlainTimeCode } from "../typedefs/types";
-import { PUNCS_FORBIDDEN, PUNCS_FORBIDDEN_FRONTAL, TIMECODE } from "../const/consts";
+import { Bookmark, MaskedTimeCode, PbfParsed, PlainTimeCode } from "../typedefs/types";
+import { PUNCS_FORBIDDEN, TIMECODE } from "../const/consts";
+import { isPlainTimeCode } from "../utils/Typeguards";
 
-function isNumeric(char: string) {
+export function isNumeric(char: string) {
   return char.charCodeAt(0) > 47 && char.charCodeAt(0) < 58;
 }
 function unmask(timecode: MaskedTimeCode): PlainTimeCode {
   return timecode.split('').filter(isNumeric).join('');
 }
 function mask(timecode: PlainTimeCode): MaskedTimeCode {
-  const hh = timecode.slice(0, 2);
-  const mm = timecode.slice(2, 4);
-  const ss = timecode.slice(4, 6);
-  const ms = timecode.slice(6, TIMECODE.LENGTH.HHMMSSMS);
+  if (isPlainTimeCode(timecode)) { // mask timecode only if it is PlainTimeCode
+    const hh = timecode.slice(0, 2);
+    const mm = timecode.slice(2, 4);
+    const ss = timecode.slice(4, 6);
+    const ms = timecode.slice(6, TIMECODE.LENGTH.HHMMSSMS);
 
-  return `${hh}:${mm}:${ss}.${ms}`;
+    return `${hh}:${mm}:${ss}.${ms}`;
+  }
+  return timecode;
 }
+
 function produceTimeCodeFromMs(milliSec: string): PlainTimeCode {
   const intMs = parseInt(milliSec);
 
@@ -48,6 +53,23 @@ function getFilename(pathLike: string): string | undefined {
 
 export function makeRealCopy<T>(arg: T): T {
     return JSON.parse(JSON.stringify(arg)) as T;
+}
+
+export function produceBookmarkFromPbf(pbfRaw: PbfParsed): Bookmark {
+    return {
+        __typename: 'Bookmark',
+        bookmarkName: `${pbfRaw.bookmarkNames[0]}  >  ${pbfRaw.bookmarkNames[1]}`,
+        marker: {
+            begin: {
+                markerName: pbfRaw.bookmarkNames[0],
+                markerTime: produceTimeCodeFromMs(pbfRaw.milliSecs[0]),
+            },
+            end: {
+                markerName: pbfRaw.bookmarkNames[1],
+                markerTime: produceTimeCodeFromMs(pbfRaw.milliSecs[1]),
+            }
+        }
+    }
 }
 
 export const PathUtil = { splitPath, combineDirs, getFilename }

@@ -3,9 +3,8 @@ export type PropsOf<T> = Omit<T, '__typename'>;
 
 type Scalars = {
   ID: string;
+  Index: number;
   String: string;
-  Boolean: boolean;
-  Int: number;
 };
 
 export type PlainTimeCode = Scalars['String'];
@@ -28,19 +27,25 @@ export type Bookmark = {
 
 export type PathLike = {
   __typename?: 'PathLike';
-  path: string;
-  kind: PathKind;
+  path: Readonly<Scalars['String']>;
+  kind: Readonly<PathKind>;
 };
 
-export type BaseArgs = {
-  __typename?: 'BaseArgs';
-  markerIndex: Readonly<number>;
-  value: Readonly<string>;
+export type ChangeHandlerBaseArg = {
+  __typename?: 'ChangeHandlerBaseArg';
+  markerIndex: Readonly<Scalars['Index']>;
+  value: Readonly<Scalars['String']>;
 };
-export type ExtensionArgsMarker = {
-  __typename?: 'ExtensionArgsMarker';
-  key?: keyof PropsOf<Marker>;
-  which?: MarkerWhich;
+export type MarkerExt = {
+  __typename?: 'MarkerExt';
+  key?: Readonly<keyof PropsOf<Marker>>;
+  which?: Readonly<MarkerWhich>;
+};
+
+export type PbfParsed = {
+  __typename?: 'PbfParsed';
+  bookmarkNames: Readonly<Array<Scalars['String']>>;
+  milliSecs: Readonly<Array<Scalars['String']>>;
 };
 
 export type Error = {
@@ -54,12 +59,6 @@ export type ChildResponse = {
   __typename?: 'ChildResponse';
   error: Readonly<Maybe<Error>>;
   message: Readonly<Scalars['String']>;
-};
-
-export type InjectionParsed = {
-  __typename?: 'InjectionParsed';
-  bkNames: Readonly<Array<Scalars['String']>>;
-  microSecs: Readonly<Array<PlainTimeCode>>;
 };
 
 export type ApiPaths = 'split' | '';

@@ -1,23 +1,25 @@
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import { Box, Button, Typography } from '@mui/material';
-import { BaseArgs, Bookmark, ExtensionArgsMarker, PathLike, ApiStatus, Error, Maybe, Marker, PropsOf, MarkerWhich, MaskedTimeCode } from 'typedefs/types';
+import { ChangeHandlerBaseArg, Bookmark, MarkerExt, PathLike, ApiStatus, Error, Maybe, Marker, PropsOf, MarkerWhich, MaskedTimeCode, PbfParsed } from 'typedefs/types';
 import { TypeDefault, TestData, TIMECODE } from '../../const/consts';
 import { InputFilePad } from '../molecules/Input';
-import { makeRealCopy } from '../../utils/Utilities';
+import { makeRealCopy, produceBookmarkFromPbf } from '../../utils/Utilities';
 import { FormMarkerWrapper } from '../organism/Form/FormMarkerWrapper';
 import { GridContainer, GridItemMenu, GridItemMain } from '../organism/Grid';
 import { FormBookmarkName, FormMarker, FormInnerWrapper, FormWrapper } from '../organism/Form';
 import { SplitButton, SetSrcPathButton, SetOutputDirButton } from '../molecules/Button';
-import { isPathLike } from '../../utils/Typeguards';
+import { isPathLike, isPbfParsedArr } from '../../utils/Typeguards';
+import { InputErrorContext } from '../../context/InputErrorContext';
+import { StatusLabel } from '../molecules/Label';
 
 export default function Splitter() {
     const [status, setStatus] = useState<ApiStatus>('idle');
     const [srcPath, setSrcPath] = useState<PathLike>(TypeDefault.SRCPATH);
     const [outputDir, setOutputDir] = useState<PathLike>(TypeDefault.OUTPUTPATH);
     const [bookmarks, setBookmarks] = useState<Bookmark[]>([TypeDefault.BOOKMARK]);
-    const [maybeError, setMaybeError] = useState<Maybe<Error>>(null);
+    const [maybeApiError, setMaybeApiError] = useState<Maybe<Error>>(null);
 
-    const fulfillingHandler = (arg: ApiStatus | PathLike): void => {
+    const fulfillingHandler = (arg: 'fulfilled' | PathLike | PbfParsed[]): void => {
         if (isPathLike(arg)) {
             switch(arg.kind) {
                 case 'src': {
@@ -30,6 +32,10 @@ export default function Splitter() {
                 }
             }
         }
+        else if ((Array.isArray(arg)) && isPbfParsedArr(arg)) {
+            setBookmarks(arg.map(produceBookmarkFromPbf));
+            setStatus('idle');
+        }
         else {
             setStatus(arg);
         }
@@ -37,8 +43,8 @@ export default function Splitter() {
 
     const rejectionHandler = (err: Error): void => {
         setStatus('failed');
-        setMaybeError(err);
-        console.log(err.message);
+        err.message = err.message.split('\n')[0];
+        setMaybeApiError(err);
     }
 
     const pendingHandler = (arg: ApiStatus): void => {
@@ -49,7 +55,7 @@ export default function Splitter() {
         setBookmarks([...bookmarks, TypeDefault.BOOKMARK]);
     }
 
-    const bookmarkNameChangeHandler = (arg: BaseArgs): void => {
+    const bookmarkNameChangeHandler = (arg: ChangeHandlerBaseArg): void => {
         const { value, markerIndex } = arg;
         const copy = makeRealCopy<Bookmark>(bookmarks[markerIndex]);
 
@@ -61,7 +67,7 @@ export default function Splitter() {
         setBookmarks([...bookmarks.slice(0, markerIndex), copy, ...bookmarks.slice(markerIndex + 1)]);
     };
 
-    const markerChangeHandler = (arg: BaseArgs & ExtensionArgsMarker): void => {
+    const markerChangeHandler = (arg: ChangeHandlerBaseArg & MarkerExt): void => {
         const { value, markerIndex } = arg;
         const copy = makeRealCopy<Bookmark>(bookmarks[markerIndex]);
 
@@ -87,8 +93,8 @@ export default function Splitter() {
                 <SplitButton 
                     arg={bookmarks} 
                     label={'Split Video'} 
-                    disabled={srcPath.path === ''} // TODO check if there is a critial input error
-                    onSuccess={fulfillingHandler} 
+                    disabled={srcPath.path === ''}
+                    onSuccess={fulfillingHandler}
                     onFail={rejectionHandler}
                     onPending={pendingHandler}
                 />
@@ -104,17 +110,15 @@ export default function Splitter() {
                     onSuccess={fulfillingHandler}
                     onFail={rejectionHandler}
                 />
-                <InputFilePad/>
+                <InputFilePad onSuccess={fulfillingHandler} onFail={rejectionHandler} onPending={pendingHandler}/>
                 <Button onClick={() => { appendBookmark() }} sx={{ mt: 1 }}>{'Add a Bookmark'}</Button>
             </GridItemMenu>
             <GridItemMain>
-                <Typography variant={'h3'} fontFamily={'consolas'}>{status}</Typography>
-                <Typography variant={'subtitle1'} color={'#d98757'}>{ srcPath.path !== '' ? `Video Source: ${srcPath.path}` : 'Video source not yet selected' }</Typography>
-                <Typography variant={'subtitle1'} color={'#d98757'}>{ outputDir.path !== '' ? `Output Directory: ${outputDir.path}` : 'Output directory not yet specified' }</Typography>
+                <StatusLabel apiStatus={status} apiError={maybeApiError} sourcePath={srcPath.path} outputPath={outputDir.path}/>
                 <FormWrapper>
                     {bookmarks.map((each, index) => {
                         return (
-                            <FormInnerWrapper key={index} markerIndex={index}>
+                            <FormInnerWrapper key={index} markerIndex={index}> {/* // TODO Labeling `index + 1` */}
                                 <FormBookmarkName current={each.bookmarkName} onChange={bookmarkNameChangeHandler} markerIndex={index}/>
                                 <FormMarkerWrapper>
                                     <FormMarker current={each.marker} which={'begin'} onChange={markerChangeHandler} markerIndex={index}/>

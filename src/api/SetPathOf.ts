@@ -20,8 +20,8 @@ async function runSetPathOf(kind: PathKind, path: string): Promise<string> {
     data: path,
   };
 
-  const res = await axios(axiosConfig);
-  return res.data.message;
+  const response = await axios(axiosConfig);
+  return response.data.message;
 }
 
 export default trySetPathOf;

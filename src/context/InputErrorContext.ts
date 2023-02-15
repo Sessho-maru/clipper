@@ -8,7 +8,7 @@ export type MarkerFormInputError = {
 };
 
 interface InputErrorContextProps {
-    inputErrorArr: MarkerFormInputError[]; // 에러 발생한 폼을 구분하기 위해 key 값으로 'markerTime', 'markerName' 이 있어야함, 아니면 서로 덮어써버림
+    inputErrorArr: MarkerFormInputError[];
     setInputErrorArr: React.Dispatch<React.SetStateAction<MarkerFormInputError[]>>;
 }
 

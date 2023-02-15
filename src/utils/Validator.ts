@@ -1,8 +1,8 @@
 import { ERROR_CODE, PUNCS_FORBIDDEN_FRONTAL, TIMECODE } from "../const/consts";
-import { Error, MarkerWhich, MaskedTimeCode, Maybe } from "typedefs/types";
+import { Error, MarkerWhich, MaskedTimeCode, Maybe, TimeCode } from "typedefs/types";
 import { TimeCodeUtil } from "./Utilities";
 
-export function isValidBeginEndTimeCode(input: { which: MarkerWhich, markerTime: MaskedTimeCode }, compare: { which: MarkerWhich, markerTime: MaskedTimeCode }): Maybe<Error> {
+export function invalidBeginEndTimeCode(input: { which: MarkerWhich, markerTime: MaskedTimeCode }, compare: { which: MarkerWhich, markerTime: MaskedTimeCode }): Maybe<Error> {
     const intInput = TimeCodeUtil.unmask(input.markerTime).padEnd(TIMECODE.LENGTH.HHMMSSMS, '0');
     const intCompare = TimeCodeUtil.unmask(compare.markerTime).padEnd(TIMECODE.LENGTH.HHMMSSMS, '0');
 
@@ -17,7 +17,7 @@ export function isValidBeginEndTimeCode(input: { which: MarkerWhich, markerTime:
     if (!isValid) {
         const preposition = (input.which === 'begin') ? 'before' : 'after';
         return {
-            id: ERROR_CODE.inValidBeginEndTimeCode,
+            id: ERROR_CODE.invalidBeginEndTimeCode,
             level: 'critical',
             message: `${input.which} marker must be placed ${preposition} than ${compare.which} marker`,
         }

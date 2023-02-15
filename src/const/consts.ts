@@ -62,8 +62,10 @@ const _TsrcPath: PathLike = {
 }
 
 export const ERROR_CODE = {
-    inValidBeginEndTimeCode: 'E001',
-    curruptedTimeCode: 'E002',
+    ffmpegCommandRejected: 'E000',
+    invalidBeginEndTimeCode: 'E001',
+    failedToOpenFile: 'E002',
+    // curruptedTimeCode: 'E003',
     dirtyBookmarkName: 'W000'
 }
 

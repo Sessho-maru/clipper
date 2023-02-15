@@ -4,7 +4,7 @@ import { Error, Marker, MarkerWhich, MaskedTimeCode, Maybe } from 'typedefs/type
 import { FormMutatingPropOf } from 'typedefs/interfaces';
 import { InputTimeCode } from '../../molecules/Input';
 import { ERROR_CODE, TIMECODE } from '../../../const/consts';
-import { isValidBeginEndTimeCode } from '../../../utils/Validator';
+import { invalidBeginEndTimeCode } from '../../../utils/Validator';
 import { InputErrorContext, MarkerFormInputError } from '../../../context/InputErrorContext';
 import { makeRealCopy } from '../../../utils/Utilities';
 
@@ -18,7 +18,7 @@ export const FormMarker = ({ onChange, which, markerIndex, current }: FormMarker
     const [markerTimeCode, setMarkerTimeCode] = useState<MaskedTimeCode>('');
 
     const { inputErrorArr, setInputErrorArr } = useContext(InputErrorContext);
-    const errorIndex = inputErrorArr.findIndex(each => (each.markerIndex === markerIndex && each.error.id === ERROR_CODE.inValidBeginEndTimeCode));
+    const errorIndex = inputErrorArr.findIndex(each => (each.markerIndex === markerIndex && each.error.id === ERROR_CODE.invalidBeginEndTimeCode));
 
     const markerNameChangeHandler = (event: React.ChangeEvent<HTMLInputElement>): void => {
         const { id, value } = event.target;
@@ -28,7 +28,7 @@ export const FormMarker = ({ onChange, which, markerIndex, current }: FormMarker
 
     const markerTimeChangeHandler = (value: MaskedTimeCode): void => {
         setMarkerTimeCode(value);
-
+        
         const whichOpposite: MarkerWhich = (which === 'begin') ? 'end' : 'begin'
         const compare = { which: whichOpposite, markerTime: current[whichOpposite].markerTime };
         const input = { which: which, markerTime: value };
@@ -38,7 +38,7 @@ export const FormMarker = ({ onChange, which, markerIndex, current }: FormMarker
             return;
         }
 
-        const maybeError: Maybe<Error> = isValidBeginEndTimeCode(input, compare);
+        const maybeError: Maybe<Error> = invalidBeginEndTimeCode(input, compare);
         if (maybeError) {
             const alreadyExist = inputErrorArr.findIndex(each => each.markerIndex === markerIndex && each.error.id === maybeError.id);
 
@@ -59,6 +59,7 @@ export const FormMarker = ({ onChange, which, markerIndex, current }: FormMarker
                 setInputErrorArr(copy);
             }
         }
+
         onChange({key: 'markerTime', value, markerIndex, which});
     }
 

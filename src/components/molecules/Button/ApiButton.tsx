@@ -10,7 +10,7 @@ interface ApiButtonProps<T> {
     arg: T,
     label: string,
     disabled?: boolean,
-    onSuccess: (arg: ApiStatus | PathLike) => void,
+    onSuccess: (arg: 'fulfilled' | PathLike) => void,
     onFail: (err: Error) => void,
     onPending?: (arg: ApiStatus) => void
 }
@@ -28,7 +28,7 @@ export function ApiButton<T>({arg, label, disabled, onSuccess, onFail, onPending
         const { begin, end } = bookmark.marker;
 
         begin.markerTime = TimeCodeUtil.mask(begin.markerTime);
-        end.markerTime = TimeCodeUtil.mask(end.markerTime);
+        end.markerTime = TimeCodeUtil.mask(end.markerTime);        
         bookmarkName = MarkerNameUtil.sanitizeMarerkName(bookmarkName);
 
         return { bookmarkName, marker: { begin, end } };

@@ -2,7 +2,7 @@ import axios, { AxiosRequestConfig, AxiosResponse } from "axios";
 import { Bookmark, ChildResponse } from "typedefs/types";
 
 async function trySplit(arg: Bookmark[]): Promise<ChildResponse> {
-  let res: ChildResponse = {} as ChildResponse; 
+  let response: ChildResponse = {} as ChildResponse; 
 
   try {
     for (const each of arg) {
@@ -10,10 +10,10 @@ async function trySplit(arg: Bookmark[]): Promise<ChildResponse> {
     }
   }
   catch (err) {
-    res = err as ChildResponse;
+    response = err as ChildResponse;
   }
 
-  return res;
+  return response;
 }
 
 async function runSplitProcess(bookmark: Bookmark): Promise<ChildResponse> {
@@ -26,13 +26,13 @@ async function runSplitProcess(bookmark: Bookmark): Promise<ChildResponse> {
     data: JSON.stringify(bookmark),
   };
 
-  const res: AxiosResponse<ChildResponse> = await axios(axiosConfig);
+  const response: AxiosResponse<ChildResponse> = await axios(axiosConfig);
   return new Promise<ChildResponse>((resolve, reject) => {
-    if (res.data.error) {
-      reject(res.data);
+    if (response.data.error) {
+      reject(response.data);
     }
     else {
-      resolve(res.data);
+      resolve(response.data);
     }
   });
 }

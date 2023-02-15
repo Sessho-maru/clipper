@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import { TextField } from '@mui/material';
-import useMarkerMutable from '../../../hooks/useMarkerMutable'; // TODO rename to useMakeMarkerMutable
+import useMakeMarkerMutable from '../../../hooks/useMakeMarkerMutable';
 import { FormMutatingPropOf } from 'typedefs/interfaces';
 import { makeRealCopy } from '../../../utils/Utilities';
 import { InputErrorContext, MarkerFormInputError } from '../../../context/InputErrorContext';
@@ -16,7 +16,7 @@ export const FormBookmarkName = ({ onChange, markerIndex, current }: FormBookmar
     const [bookmarkName, setBookmarkName] = useState<string>('');
 
     const inputRef = useRef<HTMLInputElement>(null);
-    const isMutable = useMarkerMutable(inputRef);
+    const isMutable = useMakeMarkerMutable(inputRef);
 
     const { inputErrorArr, setInputErrorArr } = useContext(InputErrorContext);
     const errorIndex = inputErrorArr.findIndex(each => (each.markerIndex === markerIndex && each.error.id === ERROR_CODE.dirtyBookmarkName));
