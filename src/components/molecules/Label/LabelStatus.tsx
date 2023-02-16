@@ -8,7 +8,7 @@ interface StatusLabelProps {
     apiError: Maybe<Error>;
 }
 
-export const StatusLabel = ({ apiStatus, sourcePath, outputPath, apiError }: StatusLabelProps) => {
+export const LabelStatus = ({ apiStatus, sourcePath, outputPath, apiError }: StatusLabelProps) => {
     return (
         <Box whiteSpace={'nowrap'} overflow={'hidden'}> {/* TODO: textOverflow is not working... */}
             {

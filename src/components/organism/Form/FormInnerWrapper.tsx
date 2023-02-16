@@ -1,7 +1,7 @@
 import { Box, Typography } from "@mui/material"
-import { useContext, useRef, useState } from "react";
+import { useContext, useRef } from "react";
 import { Error, Maybe } from "typedefs/types";
-import { InputErrorContext, MarkerFormInputError } from "../../../context/InputErrorContext";
+import { InputErrorContext } from "../../../context/InputErrorContext";
 
 interface FormInnerWrapperProps {
     markerIndex: number,
@@ -26,7 +26,7 @@ export const FormInnerWrapper = ({ markerIndex, children }: FormInnerWrapperProp
             >
                 { children }
             </Box>
-            <Box display={'flex'} justifyContent={'center'} width={1} height={'15px'}>
+            <Box display={'flex'} justifyContent={'center'} width={1} height={'15px'}> {/* TODO Wrap this Box as `LabelErrorMessage` component */}
                 <Typography 
                     variant={'caption'} 
                     color={ (refFormError.current) ? refFormError.current.level === 'critical' ? 'red' : '#ff5722' : undefined }

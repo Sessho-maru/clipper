@@ -1,6 +1,6 @@
 import { Paper, Stack, Typography } from "@mui/material"
 import tryParsePBF from "../../../api/ParseDaumpotPBF";
-import { ApiStatus, Error, PathLike, PbfParsed } from "typedefs/types";
+import { ApiStatus, Error, PbfParsed } from "typedefs/types";
 
 function ignoreDefault(event: React.DragEvent): void {
     event.preventDefault();
@@ -14,7 +14,6 @@ interface InputFilePadProps {
 }
 
 export const InputFilePad = ({onSuccess, onFail, onPending}: InputFilePadProps) => {
-
     const dropHandler = async (event: React.DragEvent): Promise<void> => {
         ignoreDefault(event);
 

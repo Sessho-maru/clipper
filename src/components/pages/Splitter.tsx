@@ -1,7 +1,7 @@
-import { useContext, useState } from 'react';
-import { Box, Button, Typography } from '@mui/material';
+import { useState } from 'react';
+import { Button } from '@mui/material';
 import { ChangeHandlerBaseArg, Bookmark, MarkerExt, PathLike, ApiStatus, Error, Maybe, Marker, PropsOf, MarkerWhich, MaskedTimeCode, PbfParsed } from 'typedefs/types';
-import { TypeDefault, TestData, TIMECODE } from '../../const/consts';
+import { TypeDefault } from '../../const/consts';
 import { InputFilePad } from '../molecules/Input';
 import { makeRealCopy, produceBookmarkFromPbf } from '../../utils/Utilities';
 import { FormMarkerWrapper } from '../organism/Form/FormMarkerWrapper';
@@ -9,8 +9,7 @@ import { GridContainer, GridItemMenu, GridItemMain } from '../organism/Grid';
 import { FormBookmarkName, FormMarker, FormInnerWrapper, FormWrapper } from '../organism/Form';
 import { SplitButton, SetSrcPathButton, SetOutputDirButton } from '../molecules/Button';
 import { isPathLike, isPbfParsedArr } from '../../utils/Typeguards';
-import { InputErrorContext } from '../../context/InputErrorContext';
-import { StatusLabel } from '../molecules/Label';
+import { LabelStatus } from '../molecules/Label';
 
 export default function Splitter() {
     const [status, setStatus] = useState<ApiStatus>('idle');
@@ -77,7 +76,7 @@ export default function Splitter() {
         if (key === 'markerName') {
             copy.marker[which].markerName = value;
             copy.bookmarkName = copy.marker.begin.markerName.concat(
-                copy.marker.end.markerName === '' ? '' : ' >  '.concat(copy.marker.end.markerName)
+                copy.marker.end.markerName === '' ? '' : '  >  '.concat(copy.marker.end.markerName)
             );
         }
         else {
@@ -114,7 +113,7 @@ export default function Splitter() {
                 <Button onClick={() => { appendBookmark() }} sx={{ mt: 1 }}>{'Add a Bookmark'}</Button>
             </GridItemMenu>
             <GridItemMain>
-                <StatusLabel apiStatus={status} apiError={maybeApiError} sourcePath={srcPath.path} outputPath={outputDir.path}/>
+                <LabelStatus apiStatus={status} apiError={maybeApiError} sourcePath={srcPath.path} outputPath={outputDir.path}/>
                 <FormWrapper>
                     {bookmarks.map((each, index) => {
                         return (

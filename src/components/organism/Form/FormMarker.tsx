@@ -4,7 +4,7 @@ import { Error, Marker, MarkerWhich, MaskedTimeCode, Maybe } from 'typedefs/type
 import { FormMutatingPropOf } from 'typedefs/interfaces';
 import { InputTimeCode } from '../../molecules/Input';
 import { ERROR_CODE, TIMECODE } from '../../../const/consts';
-import { invalidBeginEndTimeCode } from '../../../utils/Validator';
+import { isInvalidBeginEndTimeCode } from '../../../utils/Validator';
 import { InputErrorContext, MarkerFormInputError } from '../../../context/InputErrorContext';
 import { makeRealCopy } from '../../../utils/Utilities';
 
@@ -38,9 +38,9 @@ export const FormMarker = ({ onChange, which, markerIndex, current }: FormMarker
             return;
         }
 
-        const maybeError: Maybe<Error> = invalidBeginEndTimeCode(input, compare);
+        const maybeError: Maybe<Error> = isInvalidBeginEndTimeCode(input, compare);
         if (maybeError) {
-            const alreadyExist = inputErrorArr.findIndex(each => each.markerIndex === markerIndex && each.error.id === maybeError.id);
+            const alreadyExist = inputErrorArr.findIndex(each => each.markerIndex === markerIndex && each.error.id === ERROR_CODE.invalidBeginEndTimeCode);
 
             if (alreadyExist === -1) {
                 setInputErrorArr([
@@ -53,7 +53,7 @@ export const FormMarker = ({ onChange, which, markerIndex, current }: FormMarker
             }
         }
         else {
-            if (errorIndex >= 0) {
+            if (errorIndex !== -1) {
                 const copy = makeRealCopy<MarkerFormInputError[]>(inputErrorArr);
                 copy.splice(errorIndex, 1);
                 setInputErrorArr(copy);
