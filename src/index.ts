@@ -40,10 +40,6 @@ ipcMain.handle('pickdir', async () => {
 let serverPath = '';
 let childProcess: ChildProcessWithoutNullStreams;
 
-ipcMain.handle('peekPath', async () => {
-    return serverPath;
-});
-
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require('electron-squirrel-startup')) {
   app.quit();
