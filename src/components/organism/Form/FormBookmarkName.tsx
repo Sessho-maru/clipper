@@ -51,7 +51,8 @@ export const FormBookmarkName = ({ onChange, markerIndex, current }: FormBookmar
     };
 
     useEffect(() => {
-        setBookmarkName(current);
+        const pseudoEvent = { target: { value: current } } as React.ChangeEvent<HTMLInputElement>;
+        inputChangeHandler(pseudoEvent);
     }, [current]);
 
     return (
@@ -59,13 +60,13 @@ export const FormBookmarkName = ({ onChange, markerIndex, current }: FormBookmar
             ref={inputRef}
             value={bookmarkName}
             variant={'outlined'}
-            label={'Bookmark Name'}
+            label={`Bookmark Name ${ !isMutable && (markerIndex === 0) ? '(double-click to edit)' : ''}`}
             disabled={!isMutable}
             onChange={inputChangeHandler}
             color={ errorIndex !== -1 ? 'warning' : undefined }
             size={'small'}
             sx={{
-                ml: '10%',
+                ml: '7%',
                 mb: '1%',
                 width: '80%'
             }}

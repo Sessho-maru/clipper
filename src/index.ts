@@ -37,7 +37,12 @@ ipcMain.handle('pickdir', async () => {
     return result.filePaths[0];
 });
 
+let serverPath = '';
 let childProcess: ChildProcessWithoutNullStreams;
+
+ipcMain.handle('peekPath', async () => {
+    return serverPath;
+});
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require('electron-squirrel-startup')) {
@@ -62,8 +67,8 @@ const createWindow = (): void => {
   // Open the DevTools.
   mainWindow.webContents.openDevTools();
 
-  const root = (__dirname.split('\\').slice(0, -2)).join('\\');
-  childProcess = spawn('node', [path.join(root, 'src/server')]);
+  serverPath = path.join(__dirname, 'src', 'server.js');
+  childProcess = spawn('node', [serverPath]);
 };
 
 // This method will be called when Electron has finished

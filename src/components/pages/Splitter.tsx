@@ -10,6 +10,7 @@ import { FormBookmarkName, FormMarker, FormInnerWrapper, FormWrapper } from '../
 import { SplitButton, SetSrcPathButton, SetOutputDirButton } from '../molecules/Button';
 import { isPathLike, isPbfParsedArr } from '../../utils/Typeguards';
 import { LabelStatus } from '../molecules/Label';
+import { ipcRenderer } from 'electron';
 
 export default function Splitter() {
     const [status, setStatus] = useState<ApiStatus>('idle');
@@ -109,6 +110,9 @@ export default function Splitter() {
                     onSuccess={fulfillingHandler}
                     onFail={rejectionHandler}
                 />
+                <Button onClick={ async () => { const ret = await ipcRenderer.invoke('peekPath'); console.log(ret); }}>
+                    Peek
+                </Button>
                 <InputFilePad onSuccess={fulfillingHandler} onFail={rejectionHandler} onPending={pendingHandler}/>
                 <Button onClick={() => { appendBookmark() }} sx={{ mt: 1 }}>{'Add a Bookmark'}</Button>
             </GridItemMenu>
@@ -117,7 +121,7 @@ export default function Splitter() {
                 <FormWrapper>
                     {bookmarks.map((each, index) => {
                         return (
-                            <FormInnerWrapper key={index} markerIndex={index}> {/* // TODO Labeling `index + 1` */}
+                            <FormInnerWrapper key={index} markerIndex={index}>
                                 <FormBookmarkName current={each.bookmarkName} onChange={bookmarkNameChangeHandler} markerIndex={index}/>
                                 <FormMarkerWrapper>
                                     <FormMarker current={each.marker} which={'begin'} onChange={markerChangeHandler} markerIndex={index}/>

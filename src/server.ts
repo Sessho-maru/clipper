@@ -1,8 +1,7 @@
 import { exec } from 'child_process';
 import { readFile } from 'fs';
 import { createServer } from 'http'
-import { ERROR_CODE } from './const/consts';
-import { Bookmark, ChildResponse, Error, PbfParsed } from './typedefs/types';
+import { Bookmark, ChildResponse, PbfParsed } from './typedefs/types';
 
 const host = 'localhost'
 const port = 8080;
@@ -17,7 +16,7 @@ function split(arg: Bookmark): Promise<ChildResponse> {
       if (err) {
         const res: ChildResponse = {
           error: {
-            id: ERROR_CODE.ffmpegCommandRejected,
+            id: 'E000',
             level: 'critical',
             message: err.message
           },
@@ -153,7 +152,7 @@ const server = createServer((request, response) => {
             response.write(
               JSON.stringify({
                 error: {
-                  id: ERROR_CODE.failedToOpenFile,
+                  id: 'E002',
                   level: 'critical',
                   message: err.message,
                 },

@@ -9,12 +9,15 @@
     "package": "electron-forge package",
     "make": "electron-forge make",
     "publish": "electron-forge publish",
-    "lint": "eslint --ext .ts,.tsx ."
+    "lint": "eslint --ext .ts,.tsx .",
+    "winpack": "electron-builder --win -p always",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder build"
   },
   "keywords": [],
   "author": {
     "name": "AprilGong",
-    "email": "volero458@gmail.com"
+    "email": "volero458@zohomail.jp"
   },
   "license": "MIT",
   "devDependencies": {
@@ -31,6 +34,7 @@
     "@vercel/webpack-asset-relocator-loader": "^1.7.3",
     "css-loader": "^6.7.3",
     "electron": "22.0.0",
+    "electron-builder": "^23.6.0",
     "eslint": "^8.30.0",
     "eslint-plugin-import": "^2.26.0",
     "fork-ts-checker-webpack-plugin": "^7.2.14",
@@ -50,5 +54,13 @@
     "react-dom": "^18.2.0",
     "react-imask": "^6.4.3",
     "react-number-format": "^5.1.2"
+  },
+  "build": {
+    "appId": "electron.vs",
+    "productName": "Video Splitter",
+    "copyright": "Copyright © ${author}",
+    "win": {
+      "target": "portable"
+    }
   }
 }

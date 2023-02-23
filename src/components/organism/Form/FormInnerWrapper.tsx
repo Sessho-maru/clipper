@@ -24,6 +24,7 @@ export const FormInnerWrapper = ({ markerIndex, children }: FormInnerWrapperProp
                 mt={1}
                 mb={1}
             >
+                <Typography fontFamily={'consolas'} display={'inline'}>{ markerIndex + 1 }</Typography>
                 { children }
             </Box>
             <Box display={'flex'} justifyContent={'center'} width={1} height={'15px'}> {/* TODO Wrap this Box as `LabelErrorMessage` component */}
