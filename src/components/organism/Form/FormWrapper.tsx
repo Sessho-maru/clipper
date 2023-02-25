@@ -1,9 +1,10 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Box, SxProps } from "@mui/material";
 import { InputErrorContext, MarkerFormInputError } from "../../../context/InputErrorContext";
 
 interface FormWrapperProps {
     children: React.ReactNode;
+    setHasInputError: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const scrollBarStyle: SxProps = {
@@ -18,8 +19,17 @@ const scrollBarStyle: SxProps = {
     },
 }
 
-export const FormWrapper = ({ children }: FormWrapperProps) => {
+export const FormWrapper = ({ children, setHasInputError }: FormWrapperProps) => {
     const [inputErrorArr, setInputErrorArr] = useState<MarkerFormInputError[]>([]);
+
+    useEffect(() => {
+        if (inputErrorArr.some(each => each.error.level === 'critical')) {
+            setHasInputError(true);
+        }
+        else {
+            setHasInputError(false);
+        }
+    }, )
 
     return (
         <InputErrorContext.Provider value={{ inputErrorArr, setInputErrorArr }}>

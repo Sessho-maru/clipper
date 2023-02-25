@@ -29,7 +29,7 @@ export function ApiButton<T>({arg, label, disabled, onSuccess, onFail, onPending
 
         begin.markerTime = TimeCodeUtil.mask(begin.markerTime);
         end.markerTime = TimeCodeUtil.mask(end.markerTime);        
-        bookmarkName = MarkerNameUtil.sanitizeMarerkName(bookmarkName);
+        bookmarkName = MarkerNameUtil.sanitizeMarkerName(bookmarkName);
 
         return { bookmarkName, marker: { begin, end } };
     }

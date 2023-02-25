@@ -61,7 +61,6 @@ export type ChildResponse = {
   message: Readonly<Scalars['String']>;
 };
 
-export type ApiPaths = 'split' | '';
 export type ApiStatus = 'idle' | 'splitting' | 'parsing' | 'pending' | 'failed' | 'fulfilled';
 export type PathKind = 'src' | 'output';
 export type MarkerWhich = 'begin' | 'end';

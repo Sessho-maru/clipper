@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { Button } from '@mui/material';
 import { ChangeHandlerBaseArg, Bookmark, MarkerExt, PathLike, ApiStatus, Error, Maybe, Marker, PropsOf, MarkerWhich, MaskedTimeCode, PbfParsed } from 'typedefs/types';
 import { TypeDefault } from '../../const/consts';
@@ -17,8 +17,13 @@ export default function Splitter() {
     const [outputDir, setOutputDir] = useState<PathLike>(TypeDefault.OUTPUTPATH);
     const [bookmarks, setBookmarks] = useState<Bookmark[]>([TypeDefault.BOOKMARK]);
     const [maybeApiError, setMaybeApiError] = useState<Maybe<Error>>(null);
+    const [hasInputError, setHasInputError] = useState<boolean>(false);
 
     const fulfillingHandler = (arg: 'fulfilled' | PathLike | PbfParsed[]): void => {
+        if (maybeApiError) {
+            setMaybeApiError(null);
+        }
+
         if (isPathLike(arg)) {
             switch(arg.kind) {
                 case 'src': {
@@ -42,7 +47,7 @@ export default function Splitter() {
 
     const rejectionHandler = (err: Error): void => {
         setStatus('failed');
-        err.message = err.message.split('\n')[0];
+        err.message = err.message.split('\r\n').at(-2)!;
         setMaybeApiError(err);
     }
 
@@ -92,7 +97,7 @@ export default function Splitter() {
                 <SplitButton 
                     arg={bookmarks} 
                     label={'Split Video'} 
-                    disabled={srcPath.path === ''}
+                    disabled={srcPath.path === '' || hasInputError}
                     onSuccess={fulfillingHandler}
                     onFail={rejectionHandler}
                     onPending={pendingHandler}
@@ -114,7 +119,7 @@ export default function Splitter() {
             </GridItemMenu>
             <GridItemMain>
                 <LabelStatus apiStatus={status} apiError={maybeApiError} sourcePath={srcPath.path} outputPath={outputDir.path}/>
-                <FormWrapper>
+                <FormWrapper setHasInputError={setHasInputError}>
                     {bookmarks.map((each, index) => {
                         return (
                             <FormInnerWrapper key={index} markerIndex={index}>

@@ -30,7 +30,7 @@ function produceTimeCodeFromMs(milliSec: string): PlainTimeCode {
   return `${hour}`.padStart(2, '0') + `${min}`.padStart(2, '0') + `${sec}`.padStart(2, '0') + `${intMs % 1000}`.padStart(3, '0');
 }
 
-function sanitizeMarerkName(arg: string): string {
+function sanitizeMarkerName(arg: string): string {
   let out = '';
   for (const char of arg) {
     out += (PUNCS_FORBIDDEN.includes(char))
@@ -74,4 +74,4 @@ export function produceBookmarkFromPbf(pbfRaw: PbfParsed): Bookmark {
 
 export const PathUtil = { splitPath, combineDirs, getFilename }
 export const TimeCodeUtil = { mask, unmask, produceTimeCodeFromMs };
-export const MarkerNameUtil = { sanitizeMarerkName };
+export const MarkerNameUtil = { sanitizeMarkerName };

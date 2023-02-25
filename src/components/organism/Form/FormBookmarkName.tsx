@@ -66,7 +66,7 @@ export const FormBookmarkName = ({ onChange, markerIndex, current }: FormBookmar
             color={ errorIndex !== -1 ? 'warning' : undefined }
             size={'small'}
             sx={{
-                ml: '7%',
+                ml: '8%',
                 mb: '1%',
                 width: '80%'
             }}
