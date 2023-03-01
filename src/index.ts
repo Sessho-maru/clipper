@@ -61,7 +61,7 @@ const createWindow = (): void => {
   mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
 
   // Open the DevTools.
-  mainWindow.webContents.openDevTools();
+  // mainWindow.webContents.openDevTools();
 
   serverPath = path.join(__dirname, 'src', 'server.js');
   childProcess = spawn('node', [serverPath]);
