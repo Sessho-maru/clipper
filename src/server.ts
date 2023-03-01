@@ -7,12 +7,13 @@ const host = 'localhost'
 const port = 8080;
 let srcPath: string;
 let srcName: string;
+let srcExt: string;
 let outputDir: string;
 
 function split(arg: Bookmark): Promise<ChildResponse> {
   const { bookmarkName, marker } = arg;
   return new Promise<ChildResponse>((resolve, reject) => {
-    exec(`ffmpeg -ss ${marker.begin.markerTime} -to ${marker.end.markerTime} -i "${srcPath}\\${srcName}" -c copy "${outputDir ?? srcPath}\\${bookmarkName}.mp4"`, (err, stdout, stderr) => {
+    exec(`ffmpeg -ss ${marker.begin.markerTime} -to ${marker.end.markerTime} -i "${srcPath}\\${srcName}" -c copy "${outputDir ?? srcPath}\\${bookmarkName}.${srcExt}"`, (err, stdout, stderr) => {
       if (err) {
         const res: ChildResponse = {
           error: {
@@ -42,6 +43,7 @@ function setSrc(path: string): string {
 
   srcPath = splitted.join('\\');
   srcName = filename;
+  srcExt = filename.split('.')[1];
 
   return `${srcPath}\\${srcName}`;
 }
