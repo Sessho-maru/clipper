@@ -1,8 +1,10 @@
 # clipper
 - Makes video clips using bookmark file `.pbf` on DAUMPotplayer
 
+<img src="https://raw.githubusercontent.com/Sessho-maru/clipper/main/example.gif" />
+
 ## Motivation
-[This tool](https://github.com/Sessho-maru/pbfWalker) simply parse a `.pbf` into a text file to make easy to peek the desired portion of video.
+[This tool](https://github.com/Sessho-maru/pbfWalker) simply parse a `.pbf` into a text file to make easy to peek the desired portion of video.<br/>
 ***clipper*** splits given video source into actual video clips
 
 ### Requirement
