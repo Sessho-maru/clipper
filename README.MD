@@ -1,0 +1,10 @@
+# clipper
+- Makes video clips using bookmark file `.pbf` on DAUMPotplayer
+
+## Motivation
+[This tool](https://github.com/Sessho-maru/pbfWalker) simply parse a `.pbf` into a text file to make easy to peek the desired portion of video.
+***clipper*** splits given video source into actual video clips
+
+### Requirement
+- node, ffmpeg
+- Turn on `Store bookmarks into .pbf files instead of Registry/INI(책갈피를 동영상과 같은 폴더에 저장)`</br>(this option makes a `.pbf` file be populated in the same folder where target video lives)
