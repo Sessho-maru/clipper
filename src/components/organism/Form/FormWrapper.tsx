@@ -29,7 +29,7 @@ export const FormWrapper = ({ children, setHasInputError }: FormWrapperProps) =>
         else {
             setHasInputError(false);
         }
-    }, )
+    }, [inputErrorArr]);
 
     return (
         <InputErrorContext.Provider value={{ inputErrorArr, setInputErrorArr }}>
