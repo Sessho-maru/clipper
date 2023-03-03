@@ -1,13 +1,13 @@
 # clipper
-- Makes video clips using bookmark file `.pbf` on DAUMPotplayer
+- Making video clips by using bookmark file `.pbf` on DAUMPotplayer
 
 <img src="https://raw.githubusercontent.com/Sessho-maru/clipper/main/example.gif" />
 
-[video source (YouTube)](https://www.youtube.com/watch?v=i93Z7zljQ7I "Universe Size Comparison 3D")
+video source, Universe Size Comparison 3D [(YouTube)](https://www.youtube.com/watch?v=i93Z7zljQ7I)
 
 ## Motivation
-[This tool](https://github.com/Sessho-maru/pbfWalker) simply parse a `.pbf` into a text file to make easy to peek the desired portion of video.<br/>
-***clipper*** splits given video source into actual video clips
+[This tool](https://github.com/Sessho-maru/pbfWalker) simply parse a `.pbf` into a plain text to make easy to peek the desired portion of video.<br/>
+***Clipper*** splits given video source into actual video clips.
 
 ### Requirement
 - node, ffmpeg
