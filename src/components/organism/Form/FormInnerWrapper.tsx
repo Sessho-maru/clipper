@@ -21,10 +21,10 @@ export const FormInnerWrapper = ({ markerIndex, children }: FormInnerWrapperProp
         <Box padding={'10px'} sx={{':hover': {backgroundColor: 'rgba(0 0 0 / 0.05)', borderRadius: '10px'}}}>
             <Box
                 width={'95%'}
-                mt={1}
+                mt={0.5}
                 mb={1}
             >
-                <Typography fontFamily={'consolas'} display={'inline'}>{ markerIndex + 1 }</Typography> {/* TODO on/off toggle for each bookmark */}
+                <Typography fontFamily={'consolas'} fontSize={'19px'}>{ markerIndex + 1 }</Typography> {/* TODO on/off toggle for each bookmark */}
                 { children }
             </Box>
             <Box display={'flex'} justifyContent={'center'} width={1} height={'15px'}> {/* TODO Wrap this Box as `LabelErrorMessage` component */}
