@@ -17,6 +17,7 @@ const scrollBarStyle: SxProps = {
         border: '1px solid',
         backgroundColor: 'rgba(0 0 0 / 0.05)',
     },
+    'position': 'relative'
 }
 
 export const FormWrapper = ({ children, setHasInputError }: FormWrapperProps) => {
@@ -33,7 +34,7 @@ export const FormWrapper = ({ children, setHasInputError }: FormWrapperProps) =>
 
     return (
         <InputErrorContext.Provider value={{ inputErrorArr, setInputErrorArr }}>
-            <Box overflow={'scroll'} height={'655px'} paddingTop={'10px'} sx={scrollBarStyle}>
+            <Box overflow={'scroll'} height={'655px'} paddingTop={'10px'} sx={scrollBarStyle} zIndex={3008}>
                 { children }    
             </Box>
         </InputErrorContext.Provider>
