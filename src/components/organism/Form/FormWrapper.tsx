@@ -7,7 +7,7 @@ interface FormWrapperProps {
     setHasInputError: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const scrollBarStyle: SxProps = {
+const scrollableAreaStyle: SxProps = {
     '&::-webkit-scrollbar': {
         width: '10px',
         WebkitAppearance: 'none'
@@ -34,7 +34,7 @@ export const FormWrapper = ({ children, setHasInputError }: FormWrapperProps) =>
 
     return (
         <InputErrorContext.Provider value={{ inputErrorArr, setInputErrorArr }}>
-            <Box overflow={'scroll'} height={'655px'} paddingTop={'10px'} sx={scrollBarStyle} zIndex={3008}>
+            <Box overflow={'scroll'} height={'655px'} paddingTop={'10px'} sx={scrollableAreaStyle} zIndex={3008}>
                 { children }    
             </Box>
         </InputErrorContext.Provider>
