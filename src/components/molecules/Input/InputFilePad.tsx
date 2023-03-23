@@ -73,7 +73,7 @@ export const InputFilePad = ({onSuccess, onFail, onPending}: InputFilePadProps) 
             >
                 <Typography sx={{ fontFamily: 'consolas', fontSize: '32px' }}>{'Drop here'}</Typography>
                 <Typography sx={{ fontFamily: 'consolas', fontSize: '32px' }}>{'.pbf from DAUMPot'}</Typography>
-                <Typography sx={{ fontFamily: 'consolas', fontSize: '32px' }}>{'or .json from VLC'}</Typography>
+                {/* <Typography sx={{ fontFamily: 'consolas', fontSize: '32px' }}>{'or .json from VLC'}</Typography> */}
             </Stack>
         </>
     )

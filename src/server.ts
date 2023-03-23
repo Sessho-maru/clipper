@@ -53,35 +53,25 @@ function parsePBF(arg: { raw: string, out: string }, modeFlg: 'range' | 'chapter
   const matchMilliSecs: string[] = arg.raw.match(/[0-9]+=[0-9]+/g)!;
 
   const isEven = (matchBookmarkNames.length % 2) === 0;
-  const loopSize = modeFlg === 'range' 
-                    ? isEven 
-                      ? matchBookmarkNames.length / 2 
-                      : Math.floor(matchBookmarkNames.length / 2)
-                    : matchBookmarkNames.length;
+  const loopSize = isEven 
+                    ? matchBookmarkNames.length / 2 
+                    : Math.floor(matchBookmarkNames.length / 2)
 
   const bookmarkNames: string[][] = [];
   const milliSecs: string[][] = [];
 
-  if (modeFlg === 'range') {
-    for (let i = 0; i < loopSize; ++i) {
-      bookmarkNames.push(matchBookmarkNames.slice(i * 2, (i * 2) + 2));
-    }
-    if (!isEven) {
-      bookmarkNames.push([matchBookmarkNames[matchBookmarkNames.length - 1]]);
-    }
-
-    for (let i = 0; i < loopSize; ++i) {
-      milliSecs.push(matchMilliSecs.slice(i * 2, (i * 2) + 2));
-    }
-    if (!isEven) {
-      milliSecs.push([matchMilliSecs[matchMilliSecs.length - 1]]);
-    }
+  for (let i = 0; i < loopSize; ++i) {
+    bookmarkNames.push(matchBookmarkNames.slice(i * 2, (i * 2) + 2));
   }
-  else {
-    for (let i = 0; i < loopSize; ++i) {
-      bookmarkNames.push([matchBookmarkNames[i]]);
-      milliSecs.push([matchMilliSecs[i]]);
-    }
+  if (!isEven) {
+    bookmarkNames.push([matchBookmarkNames[matchBookmarkNames.length - 1]]);
+  }
+
+  for (let i = 0; i < loopSize; ++i) {
+    milliSecs.push(matchMilliSecs.slice(i * 2, (i * 2) + 2));
+  }
+  if (!isEven) {
+    milliSecs.push([matchMilliSecs[matchMilliSecs.length - 1]]);
   }
   
   const out: PbfParsed[] = [];
