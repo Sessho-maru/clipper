@@ -107,12 +107,14 @@ export default function Splitter() {
                     label={'Choose Video'}
                     onSuccess={fulfillingHandler}
                     onFail={rejectionHandler}
+                    onPending={pendingHandler}
                 />
                 <SetOutputDirButton 
                     arg={outputDir} 
                     label={'Output Dir ...'}
                     onSuccess={fulfillingHandler}
                     onFail={rejectionHandler}
+                    onPending={pendingHandler}
                 />
                 <InputFilePad onSuccess={fulfillingHandler} onFail={rejectionHandler} onPending={pendingHandler}/>
                 <Button onClick={() => { appendBookmark() }} sx={{ mt: 1 }}>{'Add a Bookmark'}</Button>

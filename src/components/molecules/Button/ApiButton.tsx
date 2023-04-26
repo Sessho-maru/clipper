@@ -12,7 +12,7 @@ interface ApiButtonProps<T> {
     disabled?: boolean,
     onSuccess: (arg: 'fulfilled' | PathLike) => void,
     onFail: (err: Error) => void,
-    onPending?: (arg: ApiStatus) => void
+    onPending: (arg: 'splitting' | 'pending') => void
 }
 export type TypedApiButton<ArgumentType> = React.FC<ApiButtonProps<ArgumentType>>;
 
@@ -36,6 +36,8 @@ export function ApiButton<T>({arg, label, disabled, onSuccess, onFail, onPending
     
     const clickHandler = async (): Promise<void> => {
         if (isPathLike(arg)) {
+            onPending('pending');
+
             const { kind } = arg;
             const maybePath: Maybe<string> = await ipcRenderer.invoke(kind === 'src' ? 'picksrc': 'pickdir');
             if (maybePath) {
@@ -43,7 +45,7 @@ export function ApiButton<T>({arg, label, disabled, onSuccess, onFail, onPending
             }
         }
         else if ((Array.isArray(arg)) && isBookmarks(arg)) {
-            onPending!('splitting');
+            onPending('splitting');
 
             const response = await trySplit(arg.map(postProcessBeforeSplit));
             if (response.error) {

@@ -11,7 +11,7 @@ function ignoreDefault(event: React.DragEvent): void {
 interface InputFilePadProps {
     onSuccess: (arg: PbfParsed[]) => void,
     onFail: (err: Error) => void,
-    onPending: (arg: ApiStatus) => void,
+    onPending: (arg: 'parsing') => void,
 }
 
 export const InputFilePad = ({onSuccess, onFail, onPending}: InputFilePadProps) => {
