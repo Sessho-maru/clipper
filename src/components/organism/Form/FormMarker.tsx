@@ -36,7 +36,7 @@ export const FormMarker = ({ onChange, which, markerIndex, current }: FormMarker
         if (compare.markerTime.length < TIMECODE.LENGTH.HHMMSS || input.markerTime.length < TIMECODE.LENGTH.HHMMSS) {
             onChange({key: 'markerTime', value, markerIndex, which});
             return;
-        }
+        } // skip checking timecode value validity for optimization's sake 
 
         const maybeError: Maybe<Error> = isInvalidBeginEndTimeCode(input, compare);
         if (maybeError) {

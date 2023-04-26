@@ -11,7 +11,7 @@ export const FormMarkerWrapper = ({ children }: FormMarkerWrapperProps) => {
             display={'flex'}
             justifyContent={'space-evenly'}
         >
-            { children }
+            { children } {/* TODO Adding `>` symbol between two <FormMarker/> component */}
         </Box>
     )
 }

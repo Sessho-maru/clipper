@@ -1,17 +1,17 @@
 import { ERROR_CODE, PUNCS_FORBIDDEN_FRONTAL, TIMECODE } from "../const/consts";
-import { Error, MarkerWhich, MaskedTimeCode, Maybe } from "typedefs/types";
+import { Error, MarkerWhich, MaskedTimeCode, Maybe, PlainTimeCode } from "typedefs/types";
 import { TimeCodeUtil } from "./Utilities";
 
 export function isInvalidBeginEndTimeCode(input: { which: MarkerWhich, markerTime: MaskedTimeCode }, compare: { which: MarkerWhich, markerTime: MaskedTimeCode }): Maybe<Error> {
-    const intInput = TimeCodeUtil.unmask(input.markerTime).padEnd(TIMECODE.LENGTH.HHMMSSMS, '0');
-    const intCompare = TimeCodeUtil.unmask(compare.markerTime).padEnd(TIMECODE.LENGTH.HHMMSSMS, '0');
+    const valueInput: PlainTimeCode = TimeCodeUtil.unmask(input.markerTime).padEnd(TIMECODE.LENGTH.HHMMSSMS, '0');
+    const valueCompare: PlainTimeCode = TimeCodeUtil.unmask(compare.markerTime).padEnd(TIMECODE.LENGTH.HHMMSSMS, '0');
 
     let isValid: boolean;
     if (input.which === 'begin') {
-        isValid = intInput < intCompare;
+        isValid = valueInput < valueCompare;
     }
     else {
-        isValid = intInput > intCompare;
+        isValid = valueInput > valueCompare;
     }
 
     if (!isValid) {

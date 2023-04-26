@@ -43,21 +43,21 @@ export default function Splitter() {
         else {
             setStatus(arg);
         }
-    }
+    };
 
     const rejectionHandler = (err: Error): void => {
         setStatus('failed');
         err.message = err.message.split('\r\n').at(-2)!;
         setMaybeApiError(err);
-    }
+    };
 
     const pendingHandler = (arg: ApiStatus): void => {
         setStatus(arg);
-    }
+    };
 
     const appendBookmark = (): void => {
         setBookmarks([...bookmarks, TypeDefault.BOOKMARK]);
-    }
+    };
 
     const bookmarkNameChangeHandler = (arg: ChangeHandlerBaseArg): void => {
         const { value, markerIndex } = arg;

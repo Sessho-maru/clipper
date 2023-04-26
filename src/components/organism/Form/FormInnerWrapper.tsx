@@ -12,8 +12,8 @@ export const FormInnerWrapper = ({ markerIndex, children }: FormInnerWrapperProp
     const refFormError = useRef<Maybe<Error>>(null);
     const { inputErrorArr } = useContext(InputErrorContext);
 
-    const resultArr = inputErrorArr.filter(each => each.markerIndex === markerIndex);
-    const errors = resultArr.map((each) => { return each.error });
+    const result = inputErrorArr.filter(each => each.markerIndex === markerIndex);
+    const errors = result.map((each) => { return each.error });
 
     refFormError.current = errors.pop() ?? null;
 
