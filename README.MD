@@ -1,5 +1,5 @@
 # clipper
-- Making video clips by using bookmark file `.pbf` on DAUMPotplayer
+- Making video clips by using bookmark file `.pbf` on [DAUMPotplayer](https://potplayer.daum.net/)
 
 <img src="https://raw.githubusercontent.com/Sessho-maru/clipper/main/example.gif" />
 
