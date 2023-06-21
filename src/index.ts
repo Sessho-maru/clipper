@@ -8,7 +8,9 @@ import path from 'path';
 declare const MAIN_WINDOW_WEBPACK_ENTRY: string;
 declare const MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
 
-ipcMain.handle('picksrc', async () => {
+let childProcess: ChildProcessWithoutNullStreams;
+
+ipcMain.handle('picksrc', async (): Promise<string | null> => {
     const result = await dialog.showOpenDialog({
         title: 'Choose Video Source',
         properties: ['openFile'],
@@ -24,7 +26,7 @@ ipcMain.handle('picksrc', async () => {
     return result.filePaths[0];
 });
 
-ipcMain.handle('pickdir', async () => {
+ipcMain.handle('pickdir', async (): Promise<string | null> => {
     const result = await dialog.showOpenDialog({
         title: 'Choose Output Folder',
         properties: ['openDirectory']
@@ -36,9 +38,6 @@ ipcMain.handle('pickdir', async () => {
 
     return result.filePaths[0];
 });
-
-let serverPath = '';
-let childProcess: ChildProcessWithoutNullStreams;
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require('electron-squirrel-startup')) {
@@ -64,8 +63,7 @@ const createWindow = (): void => {
   // Open the DevTools.
   // mainWindow.webContents.openDevTools();
 
-  serverPath = path.join(__dirname, 'src', 'server.js');
-  childProcess = spawn('node', [serverPath]);
+  childProcess = spawn('node', [path.join(__dirname, 'src', 'server.js')]);
 };
 
 // This method will be called when Electron has finished
