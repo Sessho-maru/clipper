@@ -34,7 +34,7 @@ export const FormWrapper = ({ children, setHasInputError }: FormWrapperProps) =>
 
     return (
         <InputErrorContext.Provider value={{ inputErrorArr, setInputErrorArr }}>
-            <Box overflow={'scroll'} height={'655px'} paddingTop={'10px'} sx={scrollableAreaStyle} zIndex={3008}>
+            <Box overflow={'scroll'} height={'655px'} paddingTop={'10px'} sx={scrollableAreaStyle}>
                 { children }    
             </Box>
         </InputErrorContext.Provider>

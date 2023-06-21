@@ -1,4 +1,4 @@
-import { Box, Tooltip, Typography } from "@mui/material"
+import { Box, SxProps, Tooltip, Typography } from "@mui/material";
 import { ApiStatus, Error, Maybe } from "typedefs/types";
 
 interface StatusLabelProps {
@@ -8,25 +8,31 @@ interface StatusLabelProps {
     apiError: Maybe<Error>;
 }
 
+const typoGraphyEllipsis: SxProps = {
+    whiteSpace: "nowrap",
+    overflow: "hidden",
+    textOverflow: "ellipsis"
+}
+
 export const LabelStatus = ({ apiStatus, sourcePath, outputPath, apiError }: StatusLabelProps) => {
     return (
-        <Box whiteSpace={'nowrap'} overflow={'hidden'}> {/* TODO: textOverflow is not working... */}
+        <>
             {
                 apiError 
                 ? <Box>
                     <Typography variant={'h4'} fontFamily={'consolas'}>{apiStatus}</Typography>
-                    <Tooltip title={apiError.message}>
-                        <Typography color={'error'}>{apiError.message}</Typography>
+                    <Tooltip title={apiError.message} arrow>
+                        <Typography color={'error'} sx={typoGraphyEllipsis}>{apiError.message}</Typography>
                     </Tooltip>
                   </Box>
                 : <Typography variant={'h3'} fontFamily={'consolas'}>{apiStatus}</Typography>
             }
-            <Tooltip title={sourcePath}>
-                <Typography variant={'subtitle1'} color={'#d98757'}>{ sourcePath !== '' ? `Video Source: ${sourcePath}` : 'Video source not yet selected' }</Typography>
+            <Tooltip title={sourcePath} arrow>
+                <Typography variant={'subtitle1'} color={'#d98757'} sx={typoGraphyEllipsis}>{ sourcePath !== '' ? `Video Source: ${sourcePath}` : 'Video source not yet selected' }</Typography>
             </Tooltip>
-            <Tooltip title={outputPath}>
-                <Typography variant={'subtitle1'} color={'#d98757'}>{ outputPath !== '' ? `Output Directory: ${outputPath}` : 'Output directory not yet specified' }</Typography>
+            <Tooltip title={outputPath} arrow>
+                <Typography variant={'subtitle1'} color={'#d98757'} sx={typoGraphyEllipsis}>{ outputPath !== '' ? `Output Directory: ${outputPath}` : 'Output directory not yet specified' }</Typography>
             </Tooltip>
-        </Box>
+        </>
     )
 }

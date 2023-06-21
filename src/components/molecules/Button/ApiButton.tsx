@@ -63,7 +63,7 @@ export function ApiButton<T>({arg, label, disabled, onSuccess, onFail, onPending
                 size={'large'}
                 onClick={clickHandler}
                 disabled={disabled}
-                sx={{ position: 'relative', zIndex: 3010 }}
+                sx={{ position: 'relative' }}
             >
                 { label }
             </Button>
