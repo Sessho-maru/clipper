@@ -16,7 +16,7 @@ video source, Universe Size Comparison 3D [(YouTube)](https://www.youtube.com/wa
 ### How to run
 - Install Node packages
 ```
-  npm install
+  yarn install
 ```
 - Complie server.ts
 ```
@@ -28,5 +28,5 @@ video source, Universe Size Comparison 3D [(YouTube)](https://www.youtube.com/wa
 ```
 - Start Electron App
 ```
-  npm start
+  yarn start
 ```
