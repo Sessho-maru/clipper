@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Button } from '@mui/material';
 import { ChangeHandlerBaseArg, Bookmark, MarkerExt, PathLike, ApiStatus, Error, Maybe, Marker, PropsOf, MarkerWhich, MaskedTimeCode, PbfParsed } from 'typedefs/types';
 import { TypeDefault } from '../../const/consts';
@@ -48,6 +48,10 @@ export default function Splitter() {
     const rejectionHandler = (err: Error): void => {
         setStatus('failed');
         err.message = err.message.split('\r\n').at(-2)!;
+
+        if (err.message === 'operable program or batch file.') {
+            err.message = `ffmpeg is not recognized as an internal or external command`;
+        }
         setMaybeApiError(err);
     };
 
