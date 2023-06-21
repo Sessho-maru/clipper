@@ -16,21 +16,17 @@ video source, Universe Size Comparison 3D [(YouTube)](https://www.youtube.com/wa
 ### How to run
 - Install Node packages
 ```
-  @ .../clipper
   npm install
 ```
 - Complie server.ts
 ```
-  @ .../clipper
   tsc src/server.ts
 ```
 - Run complied javascript
 ```
-  @ .../clipper
   node src/server.js
 ```
 - Start Electron App
 ```
-  @ .../clipper
   npm start
 ```
