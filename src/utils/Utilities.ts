@@ -32,10 +32,11 @@ function produceTimeCodeFromMs(milliSec: string): PlainTimeCode {
 
 function sanitizeMarkerName(arg: string): string {
   let out = '';
-  for (const char of arg) {
-    out += (PUNCS_FORBIDDEN.includes(char))
+
+  for (let i = 0; i < arg.length; i++) {
+    out += (PUNCS_FORBIDDEN.includes(arg[i]))
             ? '_'
-            : char;
+            : arg[i]
   }
 
   return out;
