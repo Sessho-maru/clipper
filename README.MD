@@ -12,3 +12,25 @@ video source, Universe Size Comparison 3D [(YouTube)](https://www.youtube.com/wa
 ### Requirement
 - node, ffmpeg
 - Turn on `Store bookmarks into .pbf files instead of Registry/INI(책갈피를 동영상과 같은 폴더에 저장)`</br>(this option makes a `.pbf` file be populated in the same folder where target video lives)
+
+### Hwo to run
+- Install Node packages
+```
+  @ .../clipper
+  npm install
+```
+- Complie server.ts
+```
+  @ .../clipper
+  tsc src/server.ts
+```
+- Run complied javascript
+```
+  @ .../clipper
+  node src/server.js
+```
+- Start Electron App
+```
+  @ .../clipper
+  npm start
+```
