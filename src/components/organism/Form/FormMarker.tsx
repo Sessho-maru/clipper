@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { Stack, TextField, Typography } from '@mui/material';
-import { Error, Marker, MarkerWhich, MaskedTimeCode, Maybe } from 'typedefs/types';
+import type { Error, Marker, MarkerWhich, MaskedTimeCode, Maybe } from 'typedefs/types';
 import { FormMutatingPropOf } from 'typedefs/interfaces';
 import { InputTimeCode } from '../../molecules/Input';
 import { ERROR_CODE, TIMECODE } from '../../../const/consts';

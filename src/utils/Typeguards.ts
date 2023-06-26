@@ -1,4 +1,4 @@
-import { Bookmark, PathLike, PbfParsed, PlainTimeCode, TimeCode } from "../typedefs/types";
+import type { Bookmark, PathLike, PbfParsed, PlainTimeCode, TimeCode } from "../typedefs/types";
 
 function isPlainTimeCode(timecode: TimeCode): timecode is PlainTimeCode {
     return !timecode.split('').includes(':');

@@ -1,4 +1,4 @@
-import { Bookmark, MaskedTimeCode, PbfParsed, PlainTimeCode } from "../typedefs/types";
+import type { Bookmark, MaskedTimeCode, PbfParsed, PlainTimeCode } from "../typedefs/types";
 import { PUNCS_FORBIDDEN, TIMECODE } from "../const/consts";
 import { isPlainTimeCode } from "../utils/Typeguards";
 

@@ -1,7 +1,7 @@
 import { exec } from 'child_process';
 import { readFile } from 'fs';
 import { createServer } from 'http'
-import { Bookmark, ChildResponse, PbfParsed } from './typedefs/types';
+import type { Bookmark, ChildResponse, PbfParsed } from './typedefs/types';
 
 const host = 'localhost'
 const port = 8080;

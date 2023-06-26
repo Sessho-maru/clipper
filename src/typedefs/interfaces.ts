@@ -1,4 +1,4 @@
-import { MarkerWhich, UserMatable } from 'typedefs/types';
+import type { MarkerWhich, UserMatable } from 'typedefs/types';
 
 export interface FormMutatingPropOf<K extends UserMatable> {
     markerIndex: number;

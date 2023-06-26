@@ -1,4 +1,4 @@
-import { Bookmark, Marker, PathLike } from "../typedefs/types";
+import type { Bookmark, Marker, PathLike } from "../typedefs/types";
 
 export const PUNCS_FORBIDDEN = ['<', '>', '/', '\\', '|', '*', '?', ':', '"'];
 export const PUNCS_FORBIDDEN_FRONTAL = PUNCS_FORBIDDEN.filter(each => each !== '>');

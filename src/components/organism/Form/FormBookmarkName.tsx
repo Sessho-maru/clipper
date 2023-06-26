@@ -6,7 +6,7 @@ import { makeRealCopy } from '../../../utils/Utilities';
 import { InputErrorContext, MarkerFormInputError } from '../../../context/InputErrorContext';
 import { ERROR_CODE } from '../../../const/consts';
 import { isDirtyName } from '../../../utils/Validator';
-import { Error, Maybe } from 'typedefs/types';
+import type { Error, Maybe } from 'typedefs/types';
 
 interface FormBookmarkNameProps extends FormMutatingPropOf<'bookmarkName'> {
     current: string;

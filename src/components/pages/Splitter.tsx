@@ -1,6 +1,20 @@
 import { useState } from 'react';
 import { Button } from '@mui/material';
-import { ChangeHandlerBaseArg, Bookmark, MarkerExt, PathLike, ApiStatus, Error, Maybe, Marker, PropsOf, MarkerWhich, MaskedTimeCode, PbfParsed } from 'typedefs/types';
+import type { 
+    Error,
+    Maybe,
+    Marker,
+    PropsOf,
+    Bookmark,
+    PathLike,
+    ApiStatus,
+    MarkerExt,
+    PbfParsed,
+    MarkerWhich,
+    MaskedTimeCode, 
+    ChangeHandlerBaseArg,
+} from 'typedefs/types';
+
 import { TypeDefault } from '../../const/consts';
 import { InputFilePad } from '../molecules/Input';
 import { makeRealCopy, produceBookmarkFromPbf } from '../../utils/Utilities';

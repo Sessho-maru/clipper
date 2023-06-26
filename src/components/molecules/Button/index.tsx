@@ -1,4 +1,4 @@
-import { Bookmark, PathLike } from 'typedefs/types';
+import type { Bookmark, PathLike } from 'typedefs/types';
 import { TypedApiButton, ApiButton } from './ApiButton';
 
 export const SplitButton: TypedApiButton<Bookmark[]> = (props) => { return <ApiButton {...props}/> };

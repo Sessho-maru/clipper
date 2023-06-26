@@ -1,5 +1,5 @@
 import { createContext } from 'react';
-import { Error, Marker, PropsOf } from 'typedefs/types';
+import type { Error, Marker, PropsOf } from 'typedefs/types';
 
 export type MarkerFormInputError = {
     markerIndex: number;
