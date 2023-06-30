@@ -13,6 +13,9 @@ export const mainConfig: Configuration = {
     rules,
   },
   resolve: {
+    alias: {
+        '@mui/styled-engine': '@mui/styled-engine-sc'
+    },
     extensions: ['.js', '.ts', '.jsx', '.tsx', '.css', '.json'],
   },
 };

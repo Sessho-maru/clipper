@@ -14,9 +14,11 @@ export interface FontProps {
 }
 
 const Font = ({ label, fontType, fontWeight, fontStatus, fontFamily }: FontProps) => {
-    <StyledFont type={fontType} weight={fontWeight} status={fontStatus} family={fontFamily}>
-        { label }
-    </StyledFont>
+    return (
+        <StyledFont type={fontType} weight={fontWeight} status={fontStatus} family={fontFamily}>
+            { label }
+        </StyledFont>
+    );
 }
 
 export default Font;
