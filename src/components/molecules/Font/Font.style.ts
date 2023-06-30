@@ -12,7 +12,19 @@ const sizeStyle = css`
     ${({ type }: FontProps) => {
         switch(type) {
             case 'h1': { return css`
-                font-size: 42px;
+                font-size: 44px;
+                line-height: 56px;
+            `}
+            case 'h2': { return css`
+                font-size: 23px;
+                line-height: 30px;
+            `}
+            case 'h3': { return css`
+                font-size: 20px;
+                line-height: 26px;
+            `}
+            case 'h4': { return css`
+                font-size: 17px;
             `}
             case 'body': { return css`
                 font-size: 20px;
@@ -32,13 +44,18 @@ const colorStyle = css`
                 color: #FF0000;
             `}
             case 'WARNING': { return css`
-                color: #FF5722;
+                color: #EA3E4F;
+            `}
+            case 'ACTIVATED': { return css`
+                color: #D98757;
             `}
             case 'DISABLED': { return css`
                 color: #808080; 
                 opacity: 0.5;
             `}
-            default: return false;
+            default: { return css`
+                color: #333333;
+            `}
         }
     }}
 `;
@@ -47,7 +64,7 @@ const fontStyle = css`
     ${({ family }: FontProps) => 
         family 
             ? css`font-family: ${family};` 
-            : css`font-family: Roboto;`
+            : css`font-family: Calibri;`
     }
 `;
 
@@ -56,6 +73,7 @@ export const StyledFont = styled.p<FontProps>`
     ${colorStyle}
     ${fontStyle}
     margin: 0;
+    white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
 `;
