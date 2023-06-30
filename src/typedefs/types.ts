@@ -64,5 +64,5 @@ export type ChildResponse = {
 export type ApiStatus = 'idle' | 'splitting' | 'parsing' | 'pending' | 'failed' | 'fulfilled';
 export type PathKind = 'src' | 'output';
 export type MarkerWhich = 'begin' | 'end';
-export type ErrorLevel = 'warning' | 'critical';
+export type ErrorLevel = 'WARNING' | 'CRITICAL';
 export type UserMatable = 'bookmarkName' | 'markerName' | 'markerTime';

@@ -24,7 +24,7 @@ export const FormWrapper = ({ children, setHasInputError }: FormWrapperProps) =>
     const [inputErrorArr, setInputErrorArr] = useState<MarkerFormInputError[]>([]);
 
     useEffect(() => {
-        if (inputErrorArr.some(each => each.error.level === 'critical')) {
+        if (inputErrorArr.some(each => each.error.level === 'CRITICAL')) {
             setHasInputError(true);
         }
         else {

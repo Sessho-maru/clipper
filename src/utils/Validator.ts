@@ -18,7 +18,7 @@ export function isInvalidBeginEndTimeCode(input: { which: MarkerWhich, markerTim
         const preposition = (input.which === 'begin') ? 'before' : 'after';
         return {
             id: ERROR_CODE.invalidBeginEndTimeCode,
-            level: 'critical',
+            level: 'CRITICAL',
             message: `${input.which} marker must be placed ${preposition} than ${compare.which} marker`,
         }
     }
@@ -30,7 +30,7 @@ export function isCurruptedTimeCode(h?: string, m?: string, s?: string): Maybe<E
     const currupted = (arg: 'hour' | 'minute' | 'second', limit: number): Error => {
         return {
             id: ERROR_CODE.curruptedTimeCode,
-            level: 'critical',
+            level: 'CRITICAL',
             message: `Invalid \`${arg}\` parameter bigger than ${limit}`
         }
     };
@@ -53,7 +53,7 @@ export function isDirtyName(markerName: string): Maybe<Error> {
         if (PUNCS_FORBIDDEN_FRONTAL.includes(char)) {
             return {
                 id: ERROR_CODE.dirtyBookmarkName,
-                level: 'warning',
+                level: 'WARNING',
                 message: `Any forbidden character '${PUNCS_FORBIDDEN_FRONTAL.join(`','`)}' will be repalced into '_'`
             };
         }

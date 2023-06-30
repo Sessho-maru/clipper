@@ -18,7 +18,7 @@ function split(arg: Bookmark): Promise<ChildResponse> {
         const res: ChildResponse = {
           error: {
             id: 'E000',
-            level: 'critical',
+            level: 'CRITICAL',
             message: err.message
           },
           message: 'ffmpeg command has been rejected'
@@ -145,7 +145,7 @@ const server = createServer((request, response) => {
               JSON.stringify({
                 error: {
                   id: 'E002',
-                  level: 'critical',
+                  level: 'CRITICAL',
                   message: err.message,
                 },
                 message: `Failed to open the given file path ${path.split('\\').pop()}`
