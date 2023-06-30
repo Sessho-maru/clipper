@@ -51,8 +51,11 @@ const fontStyle = css`
     }
 `;
 
-export const StyledFont = styled.span<FontProps>`
+export const StyledFont = styled.p<FontProps>`
     ${sizeStyle}
     ${colorStyle}
     ${fontStyle}
+    margin: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
 `;
