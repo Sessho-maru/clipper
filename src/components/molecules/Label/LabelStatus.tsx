@@ -1,4 +1,3 @@
-import { Box, SxProps, Tooltip, Typography } from "@mui/material";
 import { PathUtil } from "../../../utils/Utilities";
 import { ApiStatus, Error, Maybe } from "typedefs/types";
 import Font, { FontStatus } from "../Font/Font";
@@ -8,12 +7,6 @@ interface StatusLabelProps {
     sourcePath: string;
     outputPath: string;
     apiError: Maybe<Error>;
-}
-
-const typoGraphyEllipsis: SxProps = {
-    whiteSpace: "nowrap",
-    overflow: "hidden",
-    textOverflow: "ellipsis"
 }
 
 type PathStatus = {
@@ -34,13 +27,13 @@ export const LabelStatus = ({ apiStatus, sourcePath, outputPath, apiError }: Sta
         <>
             {
                 apiError 
-                ? <Box>
+                ? <>
                     <Font label={apiStatus} fontType={'h2'} fontFamily={'consolas'}/>
                     <Font label={apiError.message} fontType={'h3'} fontStatus={'CRITICAL'}/>
-                  </Box>
+                  </>
                 : <Font label={apiStatus} fontType={'h1'} fontFamily={'consolas'}/>
             }
-            <Font label={sourceStatus.runs} fontType={'h2'} fontStatus={sourceStatus.status}/>
+            <Font label={sourceStatus.runs} fontType={'h2'} fontStatus={sourceStatus.status} tooltipAttach={{ title: sourcePath, placement: 'top-end'}}/>
             <Font label={outputStatus.runs} fontType={'h2'} fontStatus={outputStatus.status}/>
         </>
     )
