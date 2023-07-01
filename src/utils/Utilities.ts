@@ -57,9 +57,24 @@ export function makeRealCopy<T>(arg: T): T {
 }
 
 export function produceBookmarkFromPbf(pbfRaw: PbfParsed): Bookmark {
+    let displayBookmarkName;
+    const defaultBookmarkNameRegex = /Bookmark \d+/;
+
+    if (pbfRaw.bookmarkNames[0].match(defaultBookmarkNameRegex)) {
+        displayBookmarkName = pbfRaw.bookmarkNames[1];
+    }
+    else if (pbfRaw.bookmarkNames[1].match(defaultBookmarkNameRegex)) {
+        displayBookmarkName = pbfRaw.bookmarkNames[0]
+    }
+    else {
+        displayBookmarkName = (pbfRaw.bookmarkNames[0].length > pbfRaw.bookmarkNames[1].length)
+            ? pbfRaw.bookmarkNames[0]
+            : pbfRaw.bookmarkNames[1];
+    }
+
     return {
         __typename: 'Bookmark',
-        bookmarkName: `${pbfRaw.bookmarkNames[0]}  >  ${pbfRaw.bookmarkNames[1]}`,
+        bookmarkName: displayBookmarkName,
         marker: {
             begin: {
                 markerName: pbfRaw.bookmarkNames[0],
