@@ -1,7 +1,6 @@
 import type { Bookmark, Marker, PathLike } from "../typedefs/types";
 
 export const PUNCS_FORBIDDEN = ['<', '>', '/', '\\', '|', '*', '?', ':', '"'];
-export const PUNCS_FORBIDDEN_FRONTAL = PUNCS_FORBIDDEN.filter(each => each !== '>');
 
 export const TIMECODE = {
     MASK: '00{:}00{:}00{.}000',

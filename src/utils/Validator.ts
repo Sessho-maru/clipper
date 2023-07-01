@@ -1,4 +1,4 @@
-import { ERROR_CODE, PUNCS_FORBIDDEN_FRONTAL, TIMECODE } from "../const/consts";
+import { ERROR_CODE, PUNCS_FORBIDDEN, TIMECODE } from "../const/consts";
 import { Error, MarkerWhich, MaskedTimeCode, Maybe, PlainTimeCode } from "typedefs/types";
 import { TimeCodeUtil } from "./Utilities";
 
@@ -50,11 +50,11 @@ export function isCurruptedTimeCode(h?: string, m?: string, s?: string): Maybe<E
 
 export function isDirtyName(markerName: string): Maybe<Error> {
     for (const char of markerName) {
-        if (PUNCS_FORBIDDEN_FRONTAL.includes(char)) {
+        if (PUNCS_FORBIDDEN.includes(char)) {
             return {
                 id: ERROR_CODE.dirtyBookmarkName,
                 level: 'WARNING',
-                message: `Any forbidden character '${PUNCS_FORBIDDEN_FRONTAL.join(`','`)}' will be repalced into '_'`
+                message: `Any forbidden character '${PUNCS_FORBIDDEN.join(`','`)}' will be repalced into '_'`
             };
         }
     }

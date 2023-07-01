@@ -24,7 +24,7 @@ const sizeStyle = css`
                 line-height: 26px;
             `}
             case 'h4': { return css`
-                font-size: 16px;
+                font-size: 15px;
             `}
             case 'body': { return css`
                 font-size: 20px;
@@ -79,7 +79,7 @@ const weightStyle = css`
     }}
 `;
 
-export const StyledFont = styled.p<FontProps>`
+export const StyledFont = styled.p`
     ${sizeStyle}
     ${colorStyle}
     ${fontStyle}
