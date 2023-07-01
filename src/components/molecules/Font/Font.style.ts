@@ -24,13 +24,14 @@ const sizeStyle = css`
                 line-height: 26px;
             `}
             case 'h4': { return css`
-                font-size: 17px;
+                font-size: 16px;
             `}
             case 'body': { return css`
                 font-size: 20px;
             `}
             case 'label': { return css`
-                font-size: 18px;
+                font-size: 12px;
+                line-height: 14px;
             `}
             default: return false;
         }
@@ -68,10 +69,21 @@ const fontStyle = css`
     }
 `;
 
+const weightStyle = css`
+    ${({ weight }: FontProps) => {
+        switch(weight) {
+            case 'bold': { return css`font-weight: bold;`; }
+            case 'italic': { return css`font-style: italic;`; }
+            default: return false;
+        }   
+    }}
+`;
+
 export const StyledFont = styled.p<FontProps>`
     ${sizeStyle}
     ${colorStyle}
     ${fontStyle}
+    ${weightStyle}
     margin: 0;
     white-space: nowrap;
     overflow: hidden;

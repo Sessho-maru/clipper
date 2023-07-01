@@ -1,5 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { Stack, TextField, Typography } from '@mui/material';
+import Font from '../../molecules/Font/Font';
+import { Stack, TextField } from '@mui/material';
 import type { Error, Marker, MarkerWhich, MaskedTimeCode, Maybe } from 'typedefs/types';
 import { FormMutatingPropOf } from 'typedefs/interfaces';
 import { InputTimeCode } from '../../molecules/Input';
@@ -70,8 +71,7 @@ export const FormMarker = ({ onChange, which, markerIndex, current }: FormMarker
 
     return (
         <Stack spacing={1} width={'35%'}>
-            <Typography variant={'caption'} fontFamily={'consolas'} height={'10px'}>{which}</Typography> 
-            {/* <Font label={which} fontType={'label' } fontStyle={'consolas'} /> */}
+            <Font label={which} fontType={'label'} fontFamily={'consolas'} fontWeight={'bold'}/>
             <InputTimeCode
                 id={'markerTime'}
                 which={which}

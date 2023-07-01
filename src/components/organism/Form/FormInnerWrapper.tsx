@@ -28,10 +28,10 @@ export const FormInnerWrapper = ({ markerIndex, children }: FormInnerWrapperProp
                 mt={0.5}
                 mb={1}
             >
-                <Font label={(markerIndex + 1).toString()} fontType={'h3'} fontFamily={'consolas'}/> {/* TODO on/off toggle for each bookmark */}
+                <Font label={(markerIndex + 1).toString()} fontType={'h4'} fontFamily={'consolas'} fontWeight={'italic'}/> {/* TODO on/off toggle for each bookmark */}
                 { children }
             </Box>
-            <Box display={'flex'} justifyContent={'center'} width={1} height={'15px'}> {/* TODO Wrap this Box as `LabelErrorMessage` component */}
+            <Box display={'flex'} justifyContent={'center'} width={1} height={'19px'}> {/* TODO Wrap this Box as `LabelErrorMessage` component */}
                 <Font label={formStatus.runs} fontType={'h4'} fontStatus={formStatus.status}/>
             </Box>
         </Box>
