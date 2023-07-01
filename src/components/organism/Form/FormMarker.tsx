@@ -71,7 +71,7 @@ export const FormMarker = ({ onChange, which, markerIndex, current }: FormMarker
 
     return (
         <Stack spacing={1} width={'35%'}>
-            <Font label={which} fontType={'label'} fontFamily={'consolas'} fontWeight={'bold'}/>
+            <Font label={which} fontType={'label'} fontFamily={'consolas'} fontWeight={'bold'} style={{ marginTop: '10px' }}/>
             <InputTimeCode
                 id={'markerTime'}
                 which={which}
@@ -83,14 +83,14 @@ export const FormMarker = ({ onChange, which, markerIndex, current }: FormMarker
                 variant={'outlined'}
                 size={'small'}
             />
-            <TextField
+            {/* <TextField
                 id={'markerName'}
                 value={markerName}
                 onChange={markerNameChangeHandler}
                 placeholder={'Marker Name'}
                 variant={'outlined'}
                 size={'small'}
-            />
+            /> */}
         </Stack>
     );
 }
