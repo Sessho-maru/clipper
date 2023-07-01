@@ -15,7 +15,6 @@ interface FormMarkerProps extends FormMutatingPropOf<'markerTime'> {
 }
 
 export const FormMarker = ({ onChange, which, markerIndex, current }: FormMarkerProps) => {
-    const [, setMarkerName] = useState<string>('');
     const [markerTimeCode, setMarkerTimeCode] = useState<MaskedTimeCode>('');
 
     const { formErrorArr, setFormErrorArr } = useContext(FormErrorContext);
@@ -59,7 +58,6 @@ export const FormMarker = ({ onChange, which, markerIndex, current }: FormMarker
     }
 
     useEffect(() => {
-        setMarkerName(current[which].markerName);
         setMarkerTimeCode(current[which].markerTime);
     }, [current[which]]);
 
@@ -72,7 +70,7 @@ export const FormMarker = ({ onChange, which, markerIndex, current }: FormMarker
                 value={markerTimeCode}
                 mask={TIMECODE.MASK}
                 onAccept={markerTimeChangeHandler}
-                placeholder={'HH:MM:SS.Ms'}
+                placeholder={'HH:MM:SS.MS'}
                 error={ (errorIndex !== -1) ? true : undefined }
                 variant={'outlined'}
                 size={'small'}
