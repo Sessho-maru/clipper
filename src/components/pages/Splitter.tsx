@@ -3,14 +3,11 @@ import { Button } from '@mui/material';
 import type { 
     Error,
     Maybe,
-    Marker,
-    PropsOf,
     Bookmark,
     PathLike,
     ApiStatus,
-    MarkerExt,
+    MarkerExtendArg,
     PbfParsed,
-    MarkerWhich,
     MaskedTimeCode, 
     ChangeHandlerBaseArg,
 } from 'typedefs/types';
@@ -76,8 +73,7 @@ export default function Splitter() {
         setBookmarks([...bookmarks, TypeDefault.BOOKMARK]);
     };
 
-    const bookmarkNameChangeHandler = (arg: ChangeHandlerBaseArg): void => {
-        const { value, markerIndex } = arg;
+    const bookmarkNameChangeHandler = ({ value, markerIndex }: ChangeHandlerBaseArg): void => {
         const copy = makeRealCopy<Bookmark>(bookmarks[markerIndex]);
 
         if (value === '') {
@@ -88,22 +84,9 @@ export default function Splitter() {
         setBookmarks([...bookmarks.slice(0, markerIndex), copy, ...bookmarks.slice(markerIndex + 1)]);
     };
 
-    const markerChangeHandler = (arg: ChangeHandlerBaseArg & MarkerExt): void => {
-        const { value, markerIndex } = arg;
+    const markerChangeHandler = ({ value, markerIndex, key, which }: ChangeHandlerBaseArg & MarkerExtendArg): void => {
         const copy = makeRealCopy<Bookmark>(bookmarks[markerIndex]);
-
-        const key: keyof PropsOf<Marker> = arg.key!;
-        const which: MarkerWhich = arg.which!;
-
-        if (key === 'markerName') {
-            copy.marker[which].markerName = value;
-            copy.bookmarkName = copy.marker.begin.markerName.concat(
-                copy.marker.end.markerName === '' ? '' : '  >  '.concat(copy.marker.end.markerName)
-            );
-        }
-        else {
-            copy.marker[which][key] = (value as MaskedTimeCode);
-        }
+        copy.marker[which!][key!] = (value as MaskedTimeCode);
 
         setBookmarks([...bookmarks.slice(0, markerIndex), copy, ...bookmarks.slice(markerIndex + 1)]);
     };

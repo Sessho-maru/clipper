@@ -13,7 +13,7 @@ export type TimeCode = MaskedTimeCode | PlainTimeCode;
 
 export type Marker = {
   __typename?: 'Marker';
-  markerName: Scalars['String'];
+  markerName: Readonly<Scalars['String']>;
   markerTime: TimeCode;
 };
 export type Bookmark = {
@@ -36,9 +36,9 @@ export type ChangeHandlerBaseArg = {
   markerIndex: Readonly<Scalars['Index']>;
   value: Readonly<Scalars['String']>;
 };
-export type MarkerExt = {
-  __typename?: 'MarkerExt';
-  key?: Readonly<keyof PropsOf<Marker>>;
+export type MarkerExtendArg = {
+  __typename?: 'MarkerExtendArg';
+  key?: Readonly<'markerTime'>;
   which?: Readonly<MarkerWhich>;
 };
 
@@ -65,4 +65,4 @@ export type ApiStatus = 'idle' | 'splitting' | 'parsing' | 'pending' | 'failed' 
 export type PathKind = 'src' | 'output';
 export type MarkerWhich = 'begin' | 'end';
 export type ErrorLevel = 'WARNING' | 'CRITICAL';
-export type UserMatable = 'bookmarkName' | 'markerName' | 'markerTime';
+export type UserMatable = 'bookmarkName' | 'markerTime';

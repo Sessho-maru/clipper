@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
 import Font from '../../molecules/Font/Font';
-import { Stack, TextField } from '@mui/material';
+import { Stack } from '@mui/material';
 import type { Error, Marker, MarkerWhich, MaskedTimeCode, Maybe } from 'typedefs/types';
 import { FormMutatingPropOf } from 'typedefs/interfaces';
 import { InputTimeCode } from '../../molecules/Input';
@@ -9,23 +9,17 @@ import { isInvalidBeginEndTimeCode } from '../../../utils/Validator';
 import { FormErrorContext, MarkerFormError } from '../../../context/FormErrorContext';
 import { makeRealCopy } from '../../../utils/Utilities';
 
-interface FormMarkerProps extends FormMutatingPropOf<'markerTime' | 'markerName'> {
+interface FormMarkerProps extends FormMutatingPropOf<'markerTime'> {
     current: { begin: Marker, end: Marker },
     which: MarkerWhich;
 }
 
 export const FormMarker = ({ onChange, which, markerIndex, current }: FormMarkerProps) => {
-    const [markerName, setMarkerName] = useState<string>('');
+    const [, setMarkerName] = useState<string>('');
     const [markerTimeCode, setMarkerTimeCode] = useState<MaskedTimeCode>('');
 
     const { formErrorArr, setFormErrorArr } = useContext(FormErrorContext);
     const errorIndex = formErrorArr.findIndex(each => (each.markerIndex === markerIndex && each.error.id === ERROR_CODE.invalidBeginEndTimeCode));
-
-    const markerNameChangeHandler = (event: React.ChangeEvent<HTMLInputElement>): void => {
-        const { id, value } = event.target;
-        setMarkerName(value);
-        onChange({key: id as 'markerName', value, markerIndex, which});
-    };
 
     const markerTimeChangeHandler = (value: MaskedTimeCode): void => {
         setMarkerTimeCode(value);
@@ -83,14 +77,6 @@ export const FormMarker = ({ onChange, which, markerIndex, current }: FormMarker
                 variant={'outlined'}
                 size={'small'}
             />
-            {/* <TextField
-                id={'markerName'}
-                value={markerName}
-                onChange={markerNameChangeHandler}
-                placeholder={'Marker Name'}
-                variant={'outlined'}
-                size={'small'}
-            /> */}
         </Stack>
     );
 }
