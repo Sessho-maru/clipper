@@ -5,7 +5,7 @@ import { FormMutatingPropOf } from 'typedefs/interfaces';
 import { InputTimeCode } from '../../molecules/Input';
 import { ERROR_CODE, TIMECODE } from '../../../const/consts';
 import { isInvalidBeginEndTimeCode } from '../../../utils/Validator';
-import { InputErrorContext, MarkerFormInputError } from '../../../context/InputErrorContext';
+import { FormErrorContext, MarkerFormError } from '../../../context/FormErrorContext';
 import { makeRealCopy } from '../../../utils/Utilities';
 
 interface FormMarkerProps extends FormMutatingPropOf<'markerTime' | 'markerName'> {
@@ -17,8 +17,8 @@ export const FormMarker = ({ onChange, which, markerIndex, current }: FormMarker
     const [markerName, setMarkerName] = useState<string>('');
     const [markerTimeCode, setMarkerTimeCode] = useState<MaskedTimeCode>('');
 
-    const { inputErrorArr, setInputErrorArr } = useContext(InputErrorContext);
-    const errorIndex = inputErrorArr.findIndex(each => (each.markerIndex === markerIndex && each.error.id === ERROR_CODE.invalidBeginEndTimeCode));
+    const { formErrorArr, setFormErrorArr } = useContext(FormErrorContext);
+    const errorIndex = formErrorArr.findIndex(each => (each.markerIndex === markerIndex && each.error.id === ERROR_CODE.invalidBeginEndTimeCode));
 
     const markerNameChangeHandler = (event: React.ChangeEvent<HTMLInputElement>): void => {
         const { id, value } = event.target;
@@ -40,11 +40,11 @@ export const FormMarker = ({ onChange, which, markerIndex, current }: FormMarker
 
         const maybeError: Maybe<Error> = isInvalidBeginEndTimeCode(input, compare);
         if (maybeError) {
-            const alreadyExist = inputErrorArr.findIndex(each => each.markerIndex === markerIndex && each.error.id === ERROR_CODE.invalidBeginEndTimeCode);
+            const alreadyExist = formErrorArr.findIndex(each => each.markerIndex === markerIndex && each.error.id === ERROR_CODE.invalidBeginEndTimeCode);
 
             if (alreadyExist === -1) {
-                setInputErrorArr([
-                    ...inputErrorArr, {
+                setFormErrorArr([
+                    ...formErrorArr, {
                         markerIndex,
                         where: 'markerTime',
                         error: maybeError
@@ -54,9 +54,9 @@ export const FormMarker = ({ onChange, which, markerIndex, current }: FormMarker
         }
         else {
             if (errorIndex !== -1) {
-                const copy = makeRealCopy<MarkerFormInputError[]>(inputErrorArr);
+                const copy = makeRealCopy<MarkerFormError[]>(formErrorArr);
                 copy.splice(errorIndex, 1);
-                setInputErrorArr(copy);
+                setFormErrorArr(copy);
             }
         }
 
@@ -70,7 +70,8 @@ export const FormMarker = ({ onChange, which, markerIndex, current }: FormMarker
 
     return (
         <Stack spacing={1} width={'35%'}>
-            <Typography variant={'caption'} fontFamily={'consolas'} height={'10px'}>{which}</Typography>
+            <Typography variant={'caption'} fontFamily={'consolas'} height={'10px'}>{which}</Typography> 
+            {/* <Font label={which} fontType={'label' } fontStyle={'consolas'} /> */}
             <InputTimeCode
                 id={'markerTime'}
                 which={which}

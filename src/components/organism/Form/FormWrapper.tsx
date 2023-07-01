@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Box, SxProps } from "@mui/material";
-import { InputErrorContext, MarkerFormInputError } from "../../../context/InputErrorContext";
+import { FormErrorContext, MarkerFormError } from "../../../context/FormErrorContext";
 
 interface FormWrapperProps {
     children: React.ReactNode;
@@ -21,22 +21,22 @@ const scrollableAreaStyle: SxProps = {
 }
 
 export const FormWrapper = ({ children, setHasInputError }: FormWrapperProps) => {
-    const [inputErrorArr, setInputErrorArr] = useState<MarkerFormInputError[]>([]);
+    const [formErrorArr, setFormErrorArr] = useState<MarkerFormError[]>([]);
 
     useEffect(() => {
-        if (inputErrorArr.some(each => each.error.level === 'CRITICAL')) {
+        if (formErrorArr.some(each => each.error.level === 'CRITICAL')) {
             setHasInputError(true);
         }
         else {
             setHasInputError(false);
         }
-    }, [inputErrorArr]);
+    }, [formErrorArr]);
 
     return (
-        <InputErrorContext.Provider value={{ inputErrorArr, setInputErrorArr }}>
+        <FormErrorContext.Provider value={{ formErrorArr, setFormErrorArr }}>
             <Box overflow={'scroll'} height={'655px'} paddingTop={'10px'} sx={scrollableAreaStyle}>
                 { children }    
             </Box>
-        </InputErrorContext.Provider>
+        </FormErrorContext.Provider>
     );
 }

@@ -1,8 +1,7 @@
-import { Box, Typography } from "@mui/material"
-import { useContext, useRef } from "react";
+import { Box } from "@mui/material"
+import { useContext } from "react";
 import Font, { FontStatus } from "../../molecules/Font/Font";
-import { Error, Maybe } from "typedefs/types";
-import { InputErrorContext } from "../../../context/InputErrorContext";
+import { FormErrorContext, getLastFormError } from "../../../context/FormErrorContext";
 
 interface FormInnerWrapperProps {
     markerIndex: number,
@@ -15,15 +14,11 @@ type FormStatus = {
 }
 
 export const FormInnerWrapper = ({ markerIndex, children }: FormInnerWrapperProps) => {
-    const refFormError = useRef<Maybe<Error>>(null);
-    const { inputErrorArr } = useContext(InputErrorContext);
+    const { formErrorArr } = useContext(FormErrorContext);
 
-    const result = inputErrorArr.filter(each => each.markerIndex === markerIndex);
-    const errors = result.map((each) => { return each.error });
-
-    refFormError.current = errors.pop() ?? null;
-    const formStatus: FormStatus = refFormError.current
-        ? { runs: refFormError.current.message, status: refFormError.current.level }
+    const formError = getLastFormError(formErrorArr, markerIndex);
+    const formStatus: FormStatus = formError
+        ? { runs: formError.message, status: formError.level }
         : { runs: '', status: 'NORMAL' }
 
     return (

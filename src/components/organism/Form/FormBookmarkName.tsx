@@ -3,7 +3,7 @@ import { TextField } from '@mui/material';
 import useMakeMarkerMutable from '../../../hooks/useMakeMarkerMutable';
 import { FormMutatingPropOf } from 'typedefs/interfaces';
 import { makeRealCopy } from '../../../utils/Utilities';
-import { InputErrorContext, MarkerFormInputError } from '../../../context/InputErrorContext';
+import { FormErrorContext, MarkerFormError } from '../../../context/FormErrorContext';
 import { ERROR_CODE } from '../../../const/consts';
 import { isDirtyName } from '../../../utils/Validator';
 import type { Error, Maybe } from 'typedefs/types';
@@ -18,19 +18,19 @@ export const FormBookmarkName = ({ onChange, markerIndex, current }: FormBookmar
     const inputRef = useRef<HTMLInputElement>(null);
     const isMutable = useMakeMarkerMutable(inputRef);
 
-    const { inputErrorArr, setInputErrorArr } = useContext(InputErrorContext);
-    const errorIndex = inputErrorArr.findIndex(each => (each.markerIndex === markerIndex && each.error.id === ERROR_CODE.dirtyBookmarkName));
+    const { formErrorArr, setFormErrorArr } = useContext(FormErrorContext);
+    const errorIndex = formErrorArr.findIndex(each => (each.markerIndex === markerIndex && each.error.id === ERROR_CODE.dirtyBookmarkName));
 
     const inputChangeHandler = (event: React.ChangeEvent<HTMLInputElement>): void => {
         const value = event.target.value;
 
         const maybeError: Maybe<Error> = isDirtyName(value);
         if (maybeError) {
-            const alreadyExist = inputErrorArr.findIndex(each => each.markerIndex === markerIndex && each.error.id === maybeError.id);
+            const alreadyExist = formErrorArr.findIndex(each => each.markerIndex === markerIndex && each.error.id === maybeError.id);
 
             if (alreadyExist === -1) {
-                setInputErrorArr([
-                    ...inputErrorArr, {
+                setFormErrorArr([
+                    ...formErrorArr, {
                         markerIndex,
                         where: 'markerName',
                         error: maybeError
@@ -40,9 +40,9 @@ export const FormBookmarkName = ({ onChange, markerIndex, current }: FormBookmar
         }
         else {
             if (errorIndex >= 0) {
-                const copy = makeRealCopy<MarkerFormInputError[]>(inputErrorArr);
+                const copy = makeRealCopy<MarkerFormError[]>(formErrorArr);
                 copy.splice(errorIndex, 1);
-                setInputErrorArr(copy);
+                setFormErrorArr(copy);
             }
         }
 
