@@ -145,6 +145,7 @@ export default function Splitter() {
                                 <FormBookmarkName current={each.bookmarkName} onChange={bookmarkNameChangeHandler} markerIndex={index}/>
                                 <FormMarkerWrapper>
                                     <FormMarker current={each.marker} which={'begin'} onChange={markerChangeHandler} markerIndex={index}/>
+                                    <span style={{ fontSize: '30px' }}>{'>'}</span>
                                     <FormMarker current={each.marker} which={'end'} onChange={markerChangeHandler} markerIndex={index}/>
                                 </FormMarkerWrapper>
                             </FormInnerWrapper>
