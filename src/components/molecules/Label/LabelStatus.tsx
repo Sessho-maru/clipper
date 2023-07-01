@@ -34,7 +34,7 @@ export const LabelStatus = ({ apiStatus, sourcePath, outputPath, apiError }: Sta
                 : <Font label={apiStatus} fontType={'h1'} fontFamily={'consolas'}/>
             }
             <Font label={sourceStatus.runs} fontType={'h2'} fontStatus={sourceStatus.status} tooltipAttach={{ title: sourcePath, placement: 'top-end'}}/>
-            <Font label={outputStatus.runs} fontType={'h2'} fontStatus={outputStatus.status}/>
+            <Font label={outputStatus.runs} fontType={'h2'} fontStatus={outputStatus.status} tooltipAttach={{ title: outputPath, placement: 'top-end'}}/>
         </>
     )
 }

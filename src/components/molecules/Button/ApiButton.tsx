@@ -23,13 +23,13 @@ export function ApiButton<T>({arg, label, disabled, onSuccess, onFail, onPending
         onSuccess({ __typename: 'PathLike', path: response, kind: kind });
     };
 
-    const postProcessBeforeSplit = (bookmark: Bookmark): Bookmark => {
+    const postProcessBeforeSplit = (bookmark: Bookmark, index: number): Bookmark => {
         let { bookmarkName } = bookmark;
         const { begin, end } = bookmark.marker;
 
         begin.markerTime = TimeCodeUtil.mask(begin.markerTime);
         end.markerTime = TimeCodeUtil.mask(end.markerTime);        
-        bookmarkName = MarkerNameUtil.sanitizeMarkerName(bookmarkName);
+        bookmarkName = `${(index + 1).toString()}.${MarkerNameUtil.sanitizeMarkerName(bookmarkName)}`;
 
         return { bookmarkName, marker: { begin, end } };
     }
