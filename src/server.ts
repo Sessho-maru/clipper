@@ -1,5 +1,6 @@
 import { exec } from 'child_process';
 import { readFile } from 'fs';
+import { PathUtil } from './utils/Utilities';
 import { createServer } from 'http'
 import type { Bookmark, ChildResponse, PbfParsed } from './typedefs/types';
 
@@ -119,9 +120,19 @@ const server = createServer((request, response) => {
     case '/api/setOuputDir': {
       request.on('data', (chunk: Uint8Array) => {
         const path = chunk.toString();
-        const fullPath = request.url === '/api/setSrc'
-                          ? setSrc(path)
-                          : outputDir = path;
+        
+        let fullPath;
+        if ('/api/setSrc') {
+            fullPath = setSrc(path);
+
+            const exploded = PathUtil.splitPath(fullPath);
+            exploded.pop();
+
+            outputDir = PathUtil.combineDirs(exploded);
+        }
+        else {
+            fullPath = path;
+        }
 
         response.setHeader('Access-Control-Allow-Origin', '*');
         response.write(
