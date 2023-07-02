@@ -39,7 +39,6 @@ export const ERROR_CODE = {
     ffmpegCommandRejected: 'E000',
     invalidBeginEndTimeCode: 'E001',
     failedToOpenFile: 'E002',
-    // curruptedTimeCode: 'E003',
     dirtyBookmarkName: 'W000'
 }
 

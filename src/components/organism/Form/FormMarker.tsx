@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import Font from '../../molecules/Font/Font';
 import { Stack } from '@mui/material';
 import type { Error, Marker, MarkerWhich, MaskedTimeCode, Maybe } from 'typedefs/types';
@@ -18,38 +18,36 @@ export const FormMarker = ({ onChange, which, markerIndex, current }: FormMarker
     const [markerTimeCode, setMarkerTimeCode] = useState<MaskedTimeCode>('');
 
     const { formErrorArr, setFormErrorArr } = useContext(FormErrorContext);
-    const errorIndex = formErrorArr.findIndex(each => (each.markerIndex === markerIndex && each.error.id === ERROR_CODE.invalidBeginEndTimeCode));
+    const invalidTimeCodeIdx = formErrorArr.findIndex(each => (each.markerIndex === markerIndex && each.error.id === ERROR_CODE.invalidBeginEndTimeCode));
 
     const markerTimeChangeHandler = (value: MaskedTimeCode): void => {
         setMarkerTimeCode(value);
         
         const whichOpposite: MarkerWhich = (which === 'begin') ? 'end' : 'begin'
-        const compare = { which: whichOpposite, markerTime: current[whichOpposite].markerTime };
-        const input = { which: which, markerTime: value };
+        const compare = { which: whichOpposite, timeCode: current[whichOpposite].markerTime };
+        const input = { which: which, timeCode: value };
 
-        if (compare.markerTime.length < TIMECODE.LENGTH.HHMMSS || input.markerTime.length < TIMECODE.LENGTH.HHMMSS) {
+        if (compare.timeCode.length < TIMECODE.LENGTH.HHMMSS || input.timeCode.length < TIMECODE.LENGTH.HHMMSS) {
             onChange({key: 'markerTime', value, markerIndex, which});
             return;
         } // skip checking timecode value validity for optimization's sake 
 
-        const maybeError: Maybe<Error> = isInvalidBeginEndTimeCode(input, compare);
-        if (maybeError) {
-            const alreadyExist = formErrorArr.findIndex(each => each.markerIndex === markerIndex && each.error.id === ERROR_CODE.invalidBeginEndTimeCode);
-
-            if (alreadyExist === -1) {
+        const maybeInvalidTimeCodeErr: Maybe<Error> = isInvalidBeginEndTimeCode({input, compare});
+        if (maybeInvalidTimeCodeErr) {
+            if (invalidTimeCodeIdx === -1) {
                 setFormErrorArr([
                     ...formErrorArr, {
                         markerIndex,
                         where: 'markerTime',
-                        error: maybeError
+                        error: maybeInvalidTimeCodeErr
                     }
                 ]);
             }
         }
         else {
-            if (errorIndex !== -1) {
+            if (invalidTimeCodeIdx !== -1) {
                 const copy = makeRealCopy<MarkerFormError[]>(formErrorArr);
-                copy.splice(errorIndex, 1);
+                copy.splice(invalidTimeCodeIdx, 1);
                 setFormErrorArr(copy);
             }
         }
@@ -71,7 +69,7 @@ export const FormMarker = ({ onChange, which, markerIndex, current }: FormMarker
                 mask={TIMECODE.MASK}
                 onAccept={markerTimeChangeHandler}
                 placeholder={'HH:MM:SS.MS'}
-                error={ (errorIndex !== -1) ? true : undefined }
+                error={ (invalidTimeCodeIdx !== -1) ? true : undefined }
                 variant={'outlined'}
                 size={'small'}
             />

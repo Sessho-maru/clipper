@@ -2,9 +2,14 @@ import { ERROR_CODE, PUNCS_FORBIDDEN, TIMECODE } from "../const/consts";
 import { Error, MarkerWhich, MaskedTimeCode, Maybe, PlainTimeCode } from "typedefs/types";
 import { TimeCodeUtil } from "./Utilities";
 
-export function isInvalidBeginEndTimeCode(input: { which: MarkerWhich, markerTime: MaskedTimeCode }, compare: { which: MarkerWhich, markerTime: MaskedTimeCode }): Maybe<Error> {
-    const valueInput: PlainTimeCode = TimeCodeUtil.unmask(input.markerTime).padEnd(TIMECODE.LENGTH.HHMMSSMS, '0');
-    const valueCompare: PlainTimeCode = TimeCodeUtil.unmask(compare.markerTime).padEnd(TIMECODE.LENGTH.HHMMSSMS, '0');
+type TimeCodeValidityTestArg = {
+    input: { which: MarkerWhich; timeCode: MaskedTimeCode };
+    compare: { which: MarkerWhich; timeCode: MaskedTimeCode };
+}
+
+export function isInvalidBeginEndTimeCode({ input, compare }: TimeCodeValidityTestArg): Maybe<Error> {
+    const valueInput: PlainTimeCode = TimeCodeUtil.unmask(input.timeCode).padEnd(TIMECODE.LENGTH.HHMMSSMS, '0');
+    const valueCompare: PlainTimeCode = TimeCodeUtil.unmask(compare.timeCode).padEnd(TIMECODE.LENGTH.HHMMSSMS, '0');
 
     let isValid: boolean;
     if (input.which === 'begin') {
@@ -24,29 +29,6 @@ export function isInvalidBeginEndTimeCode(input: { which: MarkerWhich, markerTim
     }
     return null;
 }
-
-/*
-export function isCurruptedTimeCode(h?: string, m?: string, s?: string): Maybe<Error> {
-    const currupted = (arg: 'hour' | 'minute' | 'second', limit: number): Error => {
-        return {
-            id: ERROR_CODE.curruptedTimeCode,
-            level: 'CRITICAL',
-            message: `Invalid \`${arg}\` parameter bigger than ${limit}`
-        }
-    };
-
-    if (h && parseInt(h) > 23) {
-        return currupted('hour', 23);
-    }
-    if (m && parseInt(m) > 59) {
-        return currupted('minute', 59);
-    }
-    if (s && parseInt(s) > 59) {
-        return currupted('second', 59);
-    }
-    return null;
-}
-*/
 
 export function isDirtyName(markerName: string): Maybe<Error> {
     for (const char of markerName) {

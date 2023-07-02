@@ -19,29 +19,27 @@ export const FormBookmarkName = ({ onChange, markerIndex, current }: FormBookmar
     const isMutable = useMakeMarkerMutable(inputRef);
 
     const { formErrorArr, setFormErrorArr } = useContext(FormErrorContext);
-    const errorIndex = formErrorArr.findIndex(each => (each.markerIndex === markerIndex && each.error.id === ERROR_CODE.dirtyBookmarkName));
+    const dirtyNameIdx = formErrorArr.findIndex(each => (each.markerIndex === markerIndex && each.error.id === ERROR_CODE.dirtyBookmarkName));
 
     const inputChangeHandler = (event: React.ChangeEvent<HTMLInputElement>): void => {
         const value = event.target.value;
 
-        const maybeError: Maybe<Error> = isDirtyName(value);
-        if (maybeError) {
-            const alreadyExist = formErrorArr.findIndex(each => each.markerIndex === markerIndex && each.error.id === maybeError.id);
-
-            if (alreadyExist === -1) {
+        const maybeDirtyNameErr: Maybe<Error> = isDirtyName(value);
+        if (maybeDirtyNameErr) {
+            if (dirtyNameIdx === -1) {
                 setFormErrorArr([
                     ...formErrorArr, {
                         markerIndex,
                         where: 'markerName',
-                        error: maybeError
+                        error: maybeDirtyNameErr
                     }
                 ]);
             }
         }
         else {
-            if (errorIndex >= 0) {
+            if (dirtyNameIdx !== -1) {
                 const copy = makeRealCopy<MarkerFormError[]>(formErrorArr);
-                copy.splice(errorIndex, 1);
+                copy.splice(dirtyNameIdx, 1);
                 setFormErrorArr(copy);
             }
         }
@@ -63,7 +61,7 @@ export const FormBookmarkName = ({ onChange, markerIndex, current }: FormBookmar
             label={`Bookmark Name ${ !isMutable && (markerIndex === 0) ? '(double-click to edit)' : ''}`}
             disabled={!isMutable}
             onChange={inputChangeHandler}
-            color={ errorIndex !== -1 ? 'warning' : undefined }
+            color={ dirtyNameIdx !== -1 ? 'warning' : undefined }
             size={'small'}
             sx={{
                 ml: '7%',
