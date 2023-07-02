@@ -29,7 +29,7 @@ export const LabelStatus = ({ apiStatus, sourcePath, outputPath, apiError }: Sta
                 apiError 
                 ? <>
                     <Font label={apiStatus} fontType={'h2'} fontFamily={'consolas'}/>
-                    <Font label={apiError.message} fontType={'h3'} fontStatus={'CRITICAL'}/>
+                    <Font label={apiError.message} fontType={'h3'} fontStatus={'CRITICAL'} tooltipAttach={{ title: apiError.message, placement: 'top-end' }}/>
                   </>
                 : <Font label={apiStatus} fontType={'h1'} fontFamily={'consolas'}/>
             }

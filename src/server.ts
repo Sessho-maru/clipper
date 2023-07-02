@@ -116,29 +116,34 @@ const server = createServer((request, response) => {
       });
       break;
     }
-    case '/api/setSrc':
-    case '/api/setOuputDir': {
-      request.on('data', (chunk: Uint8Array) => {
-        const path = chunk.toString();
-        
-        let fullPath;
-        if ('/api/setSrc') {
-            fullPath = setSrc(path);
+    case '/api/setSrc': {
+        request.on('data', (chunk: Uint8Array) => {
+            const fullPath = setSrc(chunk.toString());
 
             const exploded = PathUtil.splitPath(fullPath);
             exploded.pop();
-
             outputDir = PathUtil.combineDirs(exploded);
-        }
-        else {
-            fullPath = path;
-        }
+
+            response.setHeader('Access-Control-Allow-Origin', '*');
+            response.write(
+                JSON.stringify({
+                    erorr: null,
+                    message: fullPath,
+                })
+            );
+            response.end();
+        });
+        break;
+    }
+    case '/api/setOuputDir': {
+      request.on('data', (chunk: Uint8Array) => {
+        outputDir = chunk.toString();
 
         response.setHeader('Access-Control-Allow-Origin', '*');
         response.write(
           JSON.stringify({
             error: null,
-            message: fullPath
+            message: outputDir
           })
         );
         response.end();

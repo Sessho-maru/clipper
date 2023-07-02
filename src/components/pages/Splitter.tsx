@@ -38,6 +38,7 @@ export default function Splitter() {
             switch(arg.kind) {
                 case 'src': {
                     setSrcPath(arg);
+                    setOutputDir(TypeDefault.OUTPUTPATH);
                     break;
                 }
                 case 'output': {
